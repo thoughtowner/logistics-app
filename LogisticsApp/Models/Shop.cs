@@ -13,7 +13,8 @@ namespace LogisticsApp.Models
         public string PortalUserId { get; set; }
         public PortalUser PortalUser { get; set; } = null!;
 
-        public List<ShopProduct> ShopProducts { get; set; } = [];
+        public List<ShopProduct> ShopProducts { get; } = [];
+        public List<Product> Products { get; } = [];
     }
 
     public class ShopProduct

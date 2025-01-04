@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Azure;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata;
 
 namespace LogisticsApp.Models
@@ -12,7 +13,8 @@ namespace LogisticsApp.Models
         public string PortalUserId { get; set; }
         public PortalUser PortalUser { get; set; } = null!;
 
-        public List<FactoryProduct> FactoryProducts { get; set; } = [];
+        public List<FactoryProduct> FactoryProducts { get; } = [];
+        public List<Product> Products { get; } = [];
     }
 
     public class FactoryProduct
