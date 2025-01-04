@@ -11,6 +11,10 @@ namespace LogisticsApp.Models
         public string StateNumber { get; set; }
         public int MaxCargoMass { get; set; }
         public int MaxCargoVolume { get; set; }
+
+        public string PortalUserId { get; set; }
+        public PortalUser PortalUser { get; set; } = null!;
+
         public List<TruckProduct> TruckProducts { get; set; } = [];
     }
 

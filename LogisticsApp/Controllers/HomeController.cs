@@ -1,5 +1,7 @@
+using LogisticsApp.Data;
 using LogisticsApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace LogisticsApp.Controllers
@@ -13,8 +15,9 @@ namespace LogisticsApp.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index([FromServices] ApplicationDbContext db)
         {
+            // return View(db.Products.Include(p => p.PortalUser).ToArray());
             return View();
         }
 

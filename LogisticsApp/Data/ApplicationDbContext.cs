@@ -14,6 +14,8 @@ namespace LogisticsApp.Data
         public DbSet<FactoryProduct> FactoryProducts { get; set; }
         public DbSet<TruckProduct> TruckProducts { get; set; }
 
+        // public IEnumerable<Product> GetProducts() => Products.Include<PortalUser>().ToArray();
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -22,6 +24,24 @@ namespace LogisticsApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<PortalUser>()
+                .HasOne(pu => pu.Factory)
+                .WithOne(f => f.PortalUser)
+                .HasForeignKey<Factory>(f => f.PortalUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PortalUser>()
+                .HasOne(pu => pu.Shop)
+                .WithOne(f => f.PortalUser)
+                .HasForeignKey<Shop>(s => s.PortalUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PortalUser>()
+                .HasOne(pu => pu.Truck)
+                .WithOne(f => f.PortalUser)
+                .HasForeignKey<Truck>(t => t.PortalUserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ShopProduct>()
                 .HasOne(sp => sp.Shop)
