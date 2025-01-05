@@ -14,5 +14,8 @@ namespace LogisticsApp.Models
         public List<ShopProduct> ShopProducts { get; set; } = [];
         public List<FactoryProduct> FactoryProducts { get; set; } = [];
         public List<TruckProduct> TruckProducts { get; set; } = [];
+        public List<Shop> Shops { get; } = [];
+        public List<Factory> Factories { get; } = [];
+        public List<Truck> Trucks { get; } = [];
     }
 }

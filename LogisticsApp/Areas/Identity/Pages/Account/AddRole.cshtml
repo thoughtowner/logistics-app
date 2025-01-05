@@ -1,0 +1,25 @@
+﻿@page
+@model LogisticsApp.Areas.Identity.Pages.Account.AddRoleModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h2>Добавить роль</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="roleName">Выберите роль</label>
+        <select id="roleName" class="form-control" asp-for="RoleName" required>
+            <option value="">Выберите роль</option>
+            @foreach (var role in Model.Roles)
+            {
+                <option value="@role.Name">@role.Name</option>
+            }
+        </select>
+        <span asp-validation-for="RoleName" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Назначить роль</button>
+</form>
+
+<div>
+    <a href="@Url.Page("/Account/Manage/Index")">Назад</a>
+</div>

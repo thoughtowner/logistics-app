@@ -3,6 +3,7 @@ using System;
 using LogisticsApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LogisticsApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250105132249_add_quantity_column")]
+    partial class add_quantity_column
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace LogisticsApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("FactoryProduct", b =>
-                {
-                    b.Property<int>("FactoriesId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("FactoriesId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("FactoryProduct");
-                });
 
             modelBuilder.Entity("LogisticsApp.Models.Factory", b =>
                 {
@@ -159,20 +147,35 @@ namespace LogisticsApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("FactoryId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Mass")
                         .HasColumnType("integer");
 
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
+                    b.Property<int?>("ShopId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("TruckId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Volume")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FactoryId");
+
+                    b.HasIndex("ShopId");
+
+                    b.HasIndex("TruckId");
 
                     b.ToTable("Products");
                 });
@@ -427,51 +430,6 @@ namespace LogisticsApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ProductShop", b =>
-                {
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ShopsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ProductsId", "ShopsId");
-
-                    b.HasIndex("ShopsId");
-
-                    b.ToTable("ProductShop");
-                });
-
-            modelBuilder.Entity("ProductTruck", b =>
-                {
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TrucksId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ProductsId", "TrucksId");
-
-                    b.HasIndex("TrucksId");
-
-                    b.ToTable("ProductTruck");
-                });
-
-            modelBuilder.Entity("FactoryProduct", b =>
-                {
-                    b.HasOne("LogisticsApp.Models.Factory", null)
-                        .WithMany()
-                        .HasForeignKey("FactoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LogisticsApp.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("LogisticsApp.Models.Factory", b =>
                 {
                     b.HasOne("LogisticsApp.Models.PortalUser", "PortalUser")
@@ -500,6 +458,21 @@ namespace LogisticsApp.Migrations
                     b.Navigation("Factory");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("LogisticsApp.Models.Product", b =>
+                {
+                    b.HasOne("LogisticsApp.Models.Factory", null)
+                        .WithMany("Products")
+                        .HasForeignKey("FactoryId");
+
+                    b.HasOne("LogisticsApp.Models.Shop", null)
+                        .WithMany("Products")
+                        .HasForeignKey("ShopId");
+
+                    b.HasOne("LogisticsApp.Models.Truck", null)
+                        .WithMany("Products")
+                        .HasForeignKey("TruckId");
                 });
 
             modelBuilder.Entity("LogisticsApp.Models.Shop", b =>
@@ -613,39 +586,11 @@ namespace LogisticsApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProductShop", b =>
-                {
-                    b.HasOne("LogisticsApp.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LogisticsApp.Models.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProductTruck", b =>
-                {
-                    b.HasOne("LogisticsApp.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LogisticsApp.Models.Truck", null)
-                        .WithMany()
-                        .HasForeignKey("TrucksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("LogisticsApp.Models.Factory", b =>
                 {
                     b.Navigation("FactoryProducts");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("LogisticsApp.Models.PortalUser", b =>
@@ -668,11 +613,15 @@ namespace LogisticsApp.Migrations
 
             modelBuilder.Entity("LogisticsApp.Models.Shop", b =>
                 {
+                    b.Navigation("Products");
+
                     b.Navigation("ShopProducts");
                 });
 
             modelBuilder.Entity("LogisticsApp.Models.Truck", b =>
                 {
+                    b.Navigation("Products");
+
                     b.Navigation("TruckProducts");
                 });
 #pragma warning restore 612, 618

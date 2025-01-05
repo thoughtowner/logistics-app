@@ -17,8 +17,7 @@ namespace LogisticsApp.Controllers
 
         public IActionResult Index([FromServices] ApplicationDbContext db)
         {
-            // return View(db.Products.Include(p => p.PortalUser).ToArray());
-            return View();
+            return View(db.Products.Include(p => p.TruckProducts).ToArray());
         }
 
         public IActionResult Privacy()

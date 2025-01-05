@@ -22,6 +22,13 @@ namespace LogisticsApp
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.LogoutPath = "/Identity/Account/Logout";
+            });
+
+
             var app = builder.Build();
 
             await InitializeRolesAsync(app);
@@ -43,6 +50,7 @@ namespace LogisticsApp
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
