@@ -1,8 +1,10 @@
+using LogisticsApp.Data;
 using LogisticsApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,10 +31,11 @@ namespace LogisticsApp.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnGetAsync()
         {
             Roles = _roleManager.Roles.ToList();
+            ViewData["Roles"] = Roles;
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync([FromServices] ApplicationDbContext db)
         {
             if (string.IsNullOrWhiteSpace(RoleName))
             {
@@ -53,17 +56,70 @@ namespace LogisticsApp.Areas.Identity.Pages.Account
                 return RedirectToPage("/Account/Login");
             }
 
+            if (await _userManager.IsInRoleAsync(user, RoleName))
+            {
+                ModelState.AddModelError(string.Empty, $"Пользователь уже имеет роль '{RoleName}'.");
+                Roles = _roleManager.Roles.ToList();
+                return Page();
+            }
+
             var result = await _userManager.AddToRoleAsync(user, role.Name);
+
             if (result.Succeeded)
             {
+                if (RoleName == "Driver")
+                {
+                    var brand = Request.Form["brand"];
+                    var model = Request.Form["model"];
+                    var stateNumber = Request.Form["stateNumber"];
+                    var maxCargoMass = int.Parse(Request.Form["maxCargoMass"]);
+                    var maxCargoVolume = int.Parse(Request.Form["maxCargoVolume"]);
+
+                    var truck = new Truck
+                    {
+                        Brand = brand,
+                        Model = model,
+                        StateNumber = stateNumber,
+                        MaxCargoMass = maxCargoMass,
+                        MaxCargoVolume = maxCargoVolume,
+                        PortalUserId = user.Id
+                    };
+
+                    db.Trucks.Add(truck);
+                }
+                else if (RoleName == "ShopOwner")
+                {
+                    var titleShop = Request.Form["titleShop"];
+
+                    var shop = new Shop
+                    {
+                        Title = titleShop,
+                        PortalUserId = user.Id
+                    };
+
+                    db.Shops.Add(shop);
+                }
+                else if (RoleName == "FactoryOwner")
+                {
+                    var titleFactory = Request.Form["titleFactory"];
+
+                    var factory = new Factory
+                    {
+                        Title = titleFactory,
+                        PortalUserId = user.Id
+                    };
+
+                    db.Factories.Add(factory);
+                }
+
+                await db.SaveChangesAsync();
+
+                Roles = _roleManager.Roles.ToList();
+
                 return RedirectToPage("/Account/Manage/Index");
             }
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
+            Roles = _roleManager.Roles.ToList();
             return Page();
         }
     }

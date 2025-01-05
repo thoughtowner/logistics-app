@@ -4,22 +4,89 @@
 
 <h2>Добавить роль</h2>
 
+<div asp-validation-summary="All" class="text-danger"></div>
+
 <form method="post">
     <div class="form-group">
         <label for="roleName">Выберите роль</label>
-        <select id="roleName" class="form-control" asp-for="RoleName" required>
+        <select id="roleName" class="form-control" asp-for="RoleName" required onchange="showAdditionalFields()">
             <option value="">Выберите роль</option>
             @foreach (var role in Model.Roles)
             {
-                <option value="@role.Name">@role.Name</option>
+                <option value="@role.Name" selected="@((Model.RoleName == role.Name) ? "selected" : null)">@role.Name</option>
             }
         </select>
         <span asp-validation-for="RoleName" class="text-danger"></span>
+    </div>
+
+    <div id="truckFields" class="additional-fields" style="display:none;">
+        <div class="form-group">
+            <label for="brand">Марка</label>
+            <input type="text" id="brand" name="brand" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="model">Модель</label>
+            <input type="text" id="model" name="model" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="stateNumber">Гос. номер</label>
+            <input type="text" id="stateNumber" name="stateNumber" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="maxCargoMass">Макс. грузоподъемность</label>
+            <input type="number" id="maxCargoMass" name="maxCargoMass" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="maxCargoVolume">Макс. объем груза</label>
+            <input type="number" id="maxCargoVolume" name="maxCargoVolume" class="form-control" />
+        </div>
+    </div>
+
+    <div id="shopFields" class="additional-fields" style="display:none;">
+        <div class="form-group">
+            <label for="titleShop">Название магазина</label>
+            <input type="text" id="titleShop" name="titleShop" class="form-control" />
+        </div>
+    </div>
+
+    <div id="factoryFields" class="additional-fields" style="display:none;">
+        <div class="form-group">
+            <label for="titleFactory">Название фабрики</label>
+            <input type="text" id="titleFactory" name="titleFactory" class="form-control" />
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary">Назначить роль</button>
 </form>
 
 <div>
-    <a href="@Url.Page("/Account/Manage/Index")">Назад</a>
+    <a href="@Url.Page("/")">Назад</a>
 </div>
+
+@section Scripts {
+    <script>
+        function showAdditionalFields() {
+            var truckFields = document.getElementById('truckFields');
+            var shopFields = document.getElementById('shopFields');
+            var factoryFields = document.getElementById('factoryFields');
+
+            truckFields.style.display = 'none';
+            shopFields.style.display = 'none';
+            factoryFields.style.display = 'none';
+
+            var selectedRole = document.getElementById('roleName').value;
+
+            if (selectedRole === 'Driver') {
+                truckFields.style.display = 'block';
+            } else if (selectedRole === 'ShopOwner') {
+                shopFields.style.display = 'block';
+            } else if (selectedRole === 'FactoryOwner') {
+                factoryFields.style.display = 'block';
+            }
+        }
+
+        window.onload = function () {
+            showAdditionalFields();
+        }
+    </script>
+}
