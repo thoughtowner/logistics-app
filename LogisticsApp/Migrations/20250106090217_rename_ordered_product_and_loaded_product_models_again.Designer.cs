@@ -3,6 +3,7 @@ using System;
 using LogisticsApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LogisticsApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250106090217_rename_ordered_product_and_loaded_product_models_again")]
+    partial class rename_ordered_product_and_loaded_product_models_again
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,36 @@ namespace LogisticsApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("FactoryProduct", b =>
+                {
+                    b.Property<int>("FactoriesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("FactoriesId", "ProductsId");
+
+                    b.HasIndex("ProductsId");
+
+                    b.ToTable("FactoryProduct");
+                });
+
+            modelBuilder.Entity("FactoryProductShop", b =>
+                {
+                    b.Property<int>("FactoryProductsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("FactoryProductsId", "ShopsId");
+
+                    b.HasIndex("ShopsId");
+
+                    b.ToTable("FactoryProductShop");
+                });
 
             modelBuilder.Entity("LogisticsApp.Models.Factory", b =>
                 {
@@ -438,6 +471,66 @@ namespace LogisticsApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("OrderedProductTruck", b =>
+                {
+                    b.Property<int>("OrderedProductsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TrucksId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OrderedProductsId", "TrucksId");
+
+                    b.HasIndex("TrucksId");
+
+                    b.ToTable("OrderedProductTruck");
+                });
+
+            modelBuilder.Entity("ProductShop", b =>
+                {
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProductsId", "ShopsId");
+
+                    b.HasIndex("ShopsId");
+
+                    b.ToTable("ProductShop");
+                });
+
+            modelBuilder.Entity("FactoryProduct", b =>
+                {
+                    b.HasOne("LogisticsApp.Models.Factory", null)
+                        .WithMany()
+                        .HasForeignKey("FactoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LogisticsApp.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FactoryProductShop", b =>
+                {
+                    b.HasOne("LogisticsApp.Models.FactoryProduct", null)
+                        .WithMany()
+                        .HasForeignKey("FactoryProductsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LogisticsApp.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LogisticsApp.Models.Factory", b =>
                 {
                     b.HasOne("LogisticsApp.Models.PortalUser", "PortalUser")
@@ -594,6 +687,36 @@ namespace LogisticsApp.Migrations
                     b.HasOne("LogisticsApp.Models.PortalUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("OrderedProductTruck", b =>
+                {
+                    b.HasOne("LogisticsApp.Models.OrderedProduct", null)
+                        .WithMany()
+                        .HasForeignKey("OrderedProductsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LogisticsApp.Models.Truck", null)
+                        .WithMany()
+                        .HasForeignKey("TrucksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProductShop", b =>
+                {
+                    b.HasOne("LogisticsApp.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LogisticsApp.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

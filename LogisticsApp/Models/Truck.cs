@@ -6,6 +6,7 @@ namespace LogisticsApp.Models
     {
         [Key]
         public int Id { get; set; }
+
         public string Brand { get; set; }
         public string Model { get; set; }
         public string StateNumber { get; set; }
@@ -15,18 +16,20 @@ namespace LogisticsApp.Models
         public string PortalUserId { get; set; }
         public PortalUser PortalUser { get; set; } = null!;
 
-        public List<TruckProduct> TruckProducts { get; } = [];
-        public List<Product> Products { get; } = [];
+        public List<LoadedProduct> LoadedProducts { get; } = [];
+        //public List<OrderedProduct> OrderedProducts { get; } = [];
     }
 
-    public class TruckProduct
+    public class LoadedProduct
     {
         [Key]
         public int Id { get; set; }
+
         public int Quantity { get; set; }
+
         public int TruckId { get; set; }
-        public int ProductId { get; set; }
+        public int OrderedProductId { get; set; }
         public Truck Truck { get; set; } = null!;
-        public Product Product { get; set; } = null!;
+        public OrderedProduct OrderedProduct { get; set; } = null!;
     }
 }

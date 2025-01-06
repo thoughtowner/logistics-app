@@ -6,16 +6,15 @@ namespace LogisticsApp.Models
     {
         [Key]
         public int Id { get; set; }
+
         public string Title { get; set; }
-        public float Price { get; set; }
         public int Mass { get; set; }
         public int Volume { get; set; }
 
-        public List<ShopProduct> ShopProducts { get; set; } = [];
-        public List<FactoryProduct> FactoryProducts { get; set; } = [];
-        public List<TruckProduct> TruckProducts { get; set; } = [];
-        public List<Shop> Shops { get; } = [];
-        public List<Factory> Factories { get; } = [];
-        public List<Truck> Trucks { get; } = [];
+        public List<ShopProduct> ShopProducts { get; } = [];
+        //public List<Shop> Shops { get; } = [];
+
+        public List<FactoryProduct> FactoryProducts { get; } = [];
+        //public List<Factory> Factories { get; } = [];
     }
 }
