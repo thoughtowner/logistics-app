@@ -1,6 +1,5 @@
-﻿@page
+﻿<!-- Views/Role/AddRole.cshtml -->
 @model LogisticsApp.Models.AddRoleViewModel
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <h2>Добавить роль</h2>
 
@@ -9,7 +8,7 @@
 <form method="post">
     <div class="form-group">
         <label for="roleName">Выберите роль</label>
-        <select id="roleName" class="form-control" asp-for="RoleName" required onchange="showAdditionalFields()">
+        <select id="roleName" class="form-control" asp-for="RoleName" onchange="showAdditionalFields()">
             <option value="">Выберите роль</option>
             @foreach (var role in Model.Roles)
             {
@@ -22,27 +21,27 @@
     <div id="truckFields" class="additional-fields" style="display:none;">
         <div class="form-group">
             <label for="brand">Марка</label>
-            <input type="text" id="brand" name="Brand" class="form-control" asp-for="Brand" />
+            <input type="text" class="form-control" asp-for="Brand" />
             <span asp-validation-for="Brand" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label for="model">Модель</label>
-            <input type="text" id="model" name="Model" class="form-control" asp-for="Model" />
+            <input type="text" class="form-control" asp-for="Model" />
             <span asp-validation-for="Model" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label for="stateNumber">Гос. номер</label>
-            <input type="text" id="stateNumber" name="StateNumber" class="form-control" asp-for="StateNumber" />
+            <input type="text" class="form-control" asp-for="StateNumber" />
             <span asp-validation-for="StateNumber" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label for="maxCargoMass">Макс. грузоподъемность</label>
-            <input type="number" id="maxCargoMass" name="MaxCargoMass" class="form-control" asp-for="MaxCargoMass" />
+            <input type="number" class="form-control" asp-for="MaxCargoMass" />
             <span asp-validation-for="MaxCargoMass" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label for="maxCargoVolume">Макс. объем груза</label>
-            <input type="number" id="maxCargoVolume" name="MaxCargoVolume" class="form-control" asp-for="MaxCargoVolume" />
+            <input type="number" class="form-control" asp-for="MaxCargoVolume" />
             <span asp-validation-for="MaxCargoVolume" class="text-danger"></span>
         </div>
     </div>
@@ -50,7 +49,7 @@
     <div id="shopFields" class="additional-fields" style="display:none;">
         <div class="form-group">
             <label for="shopTitle">Название магазина</label>
-            <input type="text" id="shopTitle" name="ShopTitle" class="form-control" asp-for="ShopTitle" />
+            <input type="text" class="form-control" asp-for="ShopTitle" />
             <span asp-validation-for="ShopTitle" class="text-danger"></span>
         </div>
     </div>
@@ -58,7 +57,7 @@
     <div id="factoryFields" class="additional-fields" style="display:none;">
         <div class="form-group">
             <label for="factoryTitle">Название фабрики</label>
-            <input type="text" id="factoryTitle" name="FactoryTitle" class="form-control" asp-for="FactoryTitle" />
+            <input type="text" class="form-control" asp-for="FactoryTitle" />
             <span asp-validation-for="FactoryTitle" class="text-danger"></span>
         </div>
     </div>
@@ -67,7 +66,7 @@
 </form>
 
 <div>
-    <a href="@Url.Page("/")">Назад</a>
+    <a href="@Url.Action("Index", "Home")">Назад</a>
 </div>
 
 @section Scripts {
