@@ -1,9 +1,7 @@
-﻿// Models/AddRoleViewModel.cs
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
 
-namespace LogisticsApp.Models  // Убедитесь, что пространство имен совпадает
+namespace LogisticsApp.Models
 {
     public class AddRoleViewModel
     {

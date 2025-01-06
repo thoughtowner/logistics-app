@@ -1,5 +1,4 @@
-﻿// Controllers/RoleController.cs
-using LogisticsApp.Data;
+﻿using LogisticsApp.Data;
 using LogisticsApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,67 +27,125 @@ public class RoleController : Controller
         {
             Roles = await _roleManager.Roles.ToListAsync()
         };
-
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddRole(AddRoleViewModel model)
+    public async Task<IActionResult> AddRole(AddRoleViewModel roleModel)
     {
-        if (ModelState.IsValid)
+        if (string.IsNullOrEmpty(roleModel.RoleName))
         {
-            // Проверка дополнительных полей в зависимости от роли
-            if (model.RoleName == "ShopOwner" && string.IsNullOrWhiteSpace(model.ShopTitle))
+            ModelState.AddModelError("RoleName", "Роль должна быть выбрана.");
+        }
+
+        if (roleModel.RoleName == "ShopOwner")
+        {
+            if (string.IsNullOrWhiteSpace(roleModel.ShopTitle))
             {
                 ModelState.AddModelError("ShopTitle", "Название магазина обязательно.");
             }
-            else if (model.RoleName == "Driver" && (string.IsNullOrWhiteSpace(model.Brand) || string.IsNullOrWhiteSpace(model.Model)))
-            {
-                ModelState.AddModelError("Brand", "Марка и модель автомобиля обязательны для роли 'Driver'.");
-            }
-
-            if (ModelState.IsValid)
+            if (ModelState["ShopTitle"]?.Errors.Count == 0)
             {
                 var user = await _userManager.GetUserAsync(User);
-                var role = await _roleManager.FindByNameAsync(model.RoleName);
+                var role = await _roleManager.FindByNameAsync(roleModel.RoleName);
                 var result = await _userManager.AddToRoleAsync(user, role.Name);
 
                 if (result.Succeeded)
                 {
-                    // Создаем записи для различных ролей
-                    if (model.RoleName == "ShopOwner")
+                    var shop = new Shop
                     {
-                        var shop = new Shop
-                        {
-                            Title = model.ShopTitle,
-                            PortalUserId = user.Id
-                        };
-                        _context.Shops.Add(shop);
-                    }
-                    else if (model.RoleName == "Driver")
-                    {
-                        var truck = new Truck
-                        {
-                            Brand = model.Brand,
-                            Model = model.Model,
-                            StateNumber = model.StateNumber,
-                            MaxCargoMass = model.MaxCargoMass,
-                            MaxCargoVolume = model.MaxCargoVolume,
-                            PortalUserId = user.Id
-                        };
-                        _context.Trucks.Add(truck);
-                    }
+                        Title = roleModel.ShopTitle,
+                        PortalUserId = user.Id
+                    };
+                    _context.Shops.Add(shop);
 
                     await _context.SaveChangesAsync();
-
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError("", "Не удалось добавить роль.");
+                ModelState.AddModelError("RoleName", "Не удалось добавить роль.");
+            }
+        }
+        else if (roleModel.RoleName == "FactoryOwner")
+        {
+            if (string.IsNullOrWhiteSpace(roleModel.FactoryTitle))
+            {
+                ModelState.AddModelError("FactoryTitle", "Название фабрики обязательно.");
+            }
+            if (ModelState["FactoryTitle"]?.Errors.Count == 0)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var role = await _roleManager.FindByNameAsync(roleModel.RoleName);
+                var result = await _userManager.AddToRoleAsync(user, role.Name);
+
+                if (result.Succeeded)
+                {
+                    var factory = new Factory
+                    {
+                        Title = roleModel.FactoryTitle,
+                        PortalUserId = user.Id
+                    };
+                    _context.Factories.Add(factory);
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AddModelError("RoleName", "Не удалось добавить роль.");
+            }
+        }
+        else if (roleModel.RoleName == "Admin")
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var role = await _roleManager.FindByNameAsync(roleModel.RoleName);
+            var result = await _userManager.AddToRoleAsync(user, role.Name);
+
+            if (result.Succeeded)
+            {
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("RoleName", "Не удалось добавить роль.");
+        }
+        else if (roleModel.RoleName == "Driver")
+        {
+            if (string.IsNullOrWhiteSpace(roleModel.Brand))
+            {
+                ModelState.AddModelError("Brand", "Марка автомобиля обязательна для роли 'Driver'.");
+            }
+            if (string.IsNullOrWhiteSpace(roleModel.Model))
+            {
+                ModelState.AddModelError("Model", "Модель автомобиля обязательна для роли 'Driver'.");
+            }
+            if (ModelState["Brand"]?.Errors.Count == 0 && ModelState["Model"]?.Errors.Count == 0)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var role = await _roleManager.FindByNameAsync(roleModel.RoleName);
+                var result = await _userManager.AddToRoleAsync(user, role.Name);
+
+                if (result.Succeeded)
+                {
+                    var truck = new Truck
+                    {
+                        Brand = roleModel.Brand,
+                        Model = roleModel.Model,
+                        StateNumber = roleModel.StateNumber,
+                        MaxCargoMass = roleModel.MaxCargoMass,
+                        MaxCargoVolume = roleModel.MaxCargoVolume,
+                        PortalUserId = user.Id
+                    };
+                    _context.Trucks.Add(truck);
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AddModelError("RoleName", "Не удалось добавить роль.");
             }
         }
 
-        model.Roles = await _roleManager.Roles.ToListAsync();
-        return View(model);
+        roleModel.Roles = await _roleManager.Roles.ToListAsync();
+        return View(roleModel);
     }
 }

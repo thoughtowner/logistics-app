@@ -1,11 +1,10 @@
-﻿<!-- Views/Role/AddRole.cshtml -->
-@model LogisticsApp.Models.AddRoleViewModel
+﻿@model LogisticsApp.Models.AddRoleViewModel
 
 <h2>Добавить роль</h2>
 
-<div asp-validation-summary="All" class="text-danger"></div>
-
 <form method="post">
+    @Html.AntiForgeryToken()
+
     <div class="form-group">
         <label for="roleName">Выберите роль</label>
         <select id="roleName" class="form-control" asp-for="RoleName" onchange="showAdditionalFields()">
