@@ -1,23 +1,38 @@
 using LogisticsApp.Data;
 using LogisticsApp.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LogisticsApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<PortalUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, UserManager<PortalUser> userManager)
         {
             _logger = logger;
+            _userManager = userManager;
         }
 
-        public IActionResult Index([FromServices] ApplicationDbContext db)
+        public async Task<IActionResult> Index()
         {
-            return View(db.Products.Include(p => p.FactoryProducts).ToArray());
+            var isAuthenticated = User.Identity.IsAuthenticated;
+
+            var roles = isAuthenticated
+                ? await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))
+                : new List<string>();
+
+            ViewData["IsAuthenticated"] = isAuthenticated;
+            ViewData["Roles"] = roles;
+
+            return View();
         }
 
         public IActionResult Privacy()
