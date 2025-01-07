@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LogisticsApp.Models.Shop>
+﻿@model LogisticsApp.Models.ShopIndexViewModel
 
 @{
     ViewData["Title"] = "Магазины";
@@ -6,13 +6,23 @@
 
 <h1>Магазины</h1>
 
+<!-- Список магазинов -->
 <ul class="list-group">
-    @foreach (var shop in Model)
+    @foreach (var shop in Model.Shops)
     {
         <li class="list-group-item">
             <a href="@Url.Action("Shop", "Product", new { id = shop.Id })">
                 @shop.Title
-            </a> - Ответственный пользователь: @shop.PortalUser.UserName
+            </a> - Владелец магазина: @shop.PortalUser.UserName
         </li>
     }
 </ul>
+
+@if (Model.ShowAddShopForm)
+{
+    <h2>Добавить новый магазин</h2>
+
+    <form asp-action="Create" method="get">
+        <button type="submit" class="btn btn-primary">Перейти к добавлению магазина</button>
+    </form>
+}

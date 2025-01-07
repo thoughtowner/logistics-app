@@ -1,5 +1,4 @@
 ﻿using LogisticsApp.Data;
-using LogisticsApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +13,6 @@ namespace LogisticsApp.Controllers
             _context = context;
         }
 
-        // GET: Product/Shop/5
-        // Показываем все товары конкретного магазина по его ID
         public async Task<IActionResult> Shop(int? id)
         {
             if (id == null)
@@ -23,7 +20,6 @@ namespace LogisticsApp.Controllers
                 return NotFound();
             }
 
-            // Находим магазин по ID
             var shop = await _context.Shops
                 .Include(s => s.ShopProducts)
                 .ThenInclude(sp => sp.Product)
