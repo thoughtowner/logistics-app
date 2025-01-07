@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LogisticsApp.Controllers
 {
+    [Authorize]
     public class ShopController : Controller
     {
         private readonly ApplicationDbContext _context;
