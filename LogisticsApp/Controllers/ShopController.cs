@@ -50,7 +50,7 @@ namespace LogisticsApp.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateShop()
+        public async Task<IActionResult> Create()
         {
             var users = await _context.Users
                 .Where(u => !_context.Shops.Any(s => s.PortalUserId == u.Id))
@@ -71,7 +71,7 @@ namespace LogisticsApp.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateShop(CreateShopViewModel model)
+        public async Task<IActionResult> Create(CreateShopViewModel model)
         {
             if (ModelState["Title"]?.Errors.Count == 0 && ModelState["PortalUserId"]?.Errors.Count == 0)
             {
@@ -99,6 +99,37 @@ namespace LogisticsApp.Controllers
             model.Users = usersList;
 
             return View(model);
+        }
+
+        [Route("Shop/{id}/Delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.ShopProducts)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            return View(shop);
+        }
+
+        [HttpPost]
+        [Route("Shop/{id}/Delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var shop = await _context.Shops.FindAsync(id);
+            if (shop != null)
+            {
+                _context.Shops.Remove(shop);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

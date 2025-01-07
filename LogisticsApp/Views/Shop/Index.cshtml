@@ -13,6 +13,8 @@
             <a href="@Url.Action("Products", "Shop", new { id = shop.Id })">
                 @shop.Title
             </a> - Владелец магазина: @shop.PortalUser.UserName
+
+            <a href="@Url.Action("Delete", "Shop", new { id = shop.Id })" class="btn btn-danger btn-sm ml-2">Удалить</a>
         </li>
     }
 </ul>
