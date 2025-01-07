@@ -12,9 +12,7 @@ namespace LogisticsApp.Models
         public int Volume { get; set; }
 
         public List<ShopProduct> ShopProducts { get; } = [];
-        //public List<Shop> Shops { get; } = [];
 
         public List<FactoryProduct> FactoryProducts { get; } = [];
-        //public List<Factory> Factories { get; } = [];
     }
 }

@@ -10,7 +10,6 @@ namespace LogisticsApp.Models
 
         public List<IdentityRole> Roles { get; set; }
 
-        // Дополнительные поля для разных ролей
         public string Brand { get; set; }
         public string Model { get; set; }
         public string StateNumber { get; set; }

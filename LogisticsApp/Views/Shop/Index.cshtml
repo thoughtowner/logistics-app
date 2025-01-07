@@ -1,0 +1,18 @@
+﻿@model IEnumerable<LogisticsApp.Models.Shop>
+
+@{
+    ViewData["Title"] = "Магазины";
+}
+
+<h1>Магазины</h1>
+
+<ul class="list-group">
+    @foreach (var shop in Model)
+    {
+        <li class="list-group-item">
+            <a href="@Url.Action("Shop", "Product", new { id = shop.Id })">
+                @shop.Title
+            </a> - Ответственный пользователь: @shop.PortalUser.UserName
+        </li>
+    }
+</ul>

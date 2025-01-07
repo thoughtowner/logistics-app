@@ -1,0 +1,25 @@
+﻿@model LogisticsApp.Models.Shop
+
+@{
+    ViewData["Title"] = "Товары магазина " + Model.Title;
+}
+
+<h1>Товары магазина: @Model.Title</h1>
+
+@if (Model.ShopProducts.Any())
+{
+    <ul class="list-group">
+        @foreach (var shopProduct in Model.ShopProducts)
+        {
+            <li class="list-group-item">
+                @shopProduct.Product.Title - Количество: @shopProduct.Quantity
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>В этом магазине пока нет товаров.</p>
+}
+
+<a href="@Url.Action("Index", "Shop")" class="btn btn-primary">Назад к магазинам</a>

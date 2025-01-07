@@ -15,7 +15,6 @@ namespace LogisticsApp.Models
         public PortalUser PortalUser { get; set; } = null!;
 
         public List<FactoryProduct> FactoryProducts { get; } = [];
-        //public List<Product> Products { get; } = [];
     }
 
     public class FactoryProduct
@@ -32,6 +31,5 @@ namespace LogisticsApp.Models
         public Product Product { get; set; } = null!;
 
         public List<OrderedProduct> OrderedProducts { get; } = [];
-        //public List<Shop> Shops { get; } = [];
     }
 }
