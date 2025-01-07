@@ -1,0 +1,58 @@
+﻿@model LogisticsApp.Models.CreateTruckViewModel
+
+@{
+    ViewData["Title"] = "Добавить грузовик";
+}
+
+<h1>Добавить новый грузовик</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="Brand">Марка грузовика</label>
+        <input type="text" class="form-control" id="Brand" name="Brand" value="@Model.Brand" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Model">Модель грузовика</label>
+        <input type="text" class="form-control" id="Model" name="Model" value="@Model.Model" required />
+    </div>
+
+    <div class="form-group">
+        <label for="StateNumber">Госномер грузовика</label>
+        <input type="text" class="form-control" id="StateNumber" name="StateNumber" value="@Model.StateNumber" required />
+    </div>
+
+    <div class="form-group">
+        <label for="MaxCargoMass">Максимальная масса груза (кг)</label>
+        <input type="number" class="form-control" id="MaxCargoMass" name="MaxCargoMass" value="@Model.MaxCargoMass" required />
+    </div>
+
+    <div class="form-group">
+        <label for="MaxCargoVolume">Максимальный объем груза (м³)</label>
+        <input type="number" class="form-control" id="MaxCargoVolume" name="MaxCargoVolume" value="@Model.MaxCargoVolume" required />
+    </div>
+
+    <div class="form-group">
+        <label for="PortalUserId">Выберите ответственного пользователя</label>
+
+        @if (Model.Users.Any())
+        {
+            <select class="form-control" id="PortalUserId" name="PortalUserId" required>
+                @foreach (var user in Model.Users)
+                {
+                    <option value="@user.Value" selected="@((user.Value == Model.PortalUserId) ? "selected" : null)">
+                        @user.Text
+                    </option>
+                }
+            </select>
+        }
+        else
+        {
+            <p class="text-danger">Нет пользователей, с которыми можно связать грузовик.</p>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<a href="@Url.Action("Index", "Truck")" class="btn btn-secondary mt-3">Назад</a>

@@ -1,0 +1,45 @@
+﻿@model LogisticsApp.Models.UpdateTruckViewModel
+
+@{
+    ViewData["Title"] = "Редактировать грузовик";
+}
+
+<h2>Редактировать грузовик</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Brand">Марка грузовика</label>
+        <input type="text" class="form-control" asp-for="Brand" />
+        <span asp-validation-for="Brand" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Model">Модель грузовика</label>
+        <input type="text" class="form-control" asp-for="Model" />
+        <span asp-validation-for="Model" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="StateNumber">Государственный номер</label>
+        <input type="text" class="form-control" asp-for="StateNumber" />
+        <span asp-validation-for="StateNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MaxCargoMass">Максимальная масса груза (кг)</label>
+        <input type="number" class="form-control" asp-for="MaxCargoMass" />
+        <span asp-validation-for="MaxCargoMass" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MaxCargoVolume">Максимальный объем груза (м³)</label>
+        <input type="number" class="form-control" asp-for="MaxCargoVolume" />
+        <span asp-validation-for="MaxCargoVolume" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+</form>
+
+<div>
+    <a href="@Url.Action("Index", "Truck")">Вернуться к списку грузовиков</a>
+</div>

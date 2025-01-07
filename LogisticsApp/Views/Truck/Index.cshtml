@@ -1,0 +1,30 @@
+﻿@model LogisticsApp.Models.TruckIndexViewModel
+
+@{
+    ViewData["Title"] = "Грузовики";
+}
+
+<h1>Грузовики</h1>
+
+<ul class="list-group">
+    @foreach (var truck in Model.Trucks)
+    {
+        <li class="list-group-item">
+            <a href="@Url.Action("Products", "Truck", new { id = truck.Id })">
+                @truck.Brand @truck.Model @truck.StateNumber
+            </a> - Водитель: @truck.PortalUser.UserName
+
+            <a href="@Url.Action("Update", "Truck", new { id = truck.Id })" class="btn btn-warning btn-sm ml-2">Редактировать</a>
+            <a href="@Url.Action("Delete", "Truck", new { id = truck.Id })" class="btn btn-danger btn-sm ml-2">Удалить</a>
+        </li>
+    }
+</ul>
+
+@if (Model.ShowAddTruckForm)
+{
+    <h2>Добавить новый грузовик</h2>
+
+    <form asp-action="Create" method="get">
+        <button type="submit" class="btn btn-primary">Перейти к добавлению грузовика</button>
+    </form>
+}

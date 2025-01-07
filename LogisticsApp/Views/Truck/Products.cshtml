@@ -1,0 +1,27 @@
+﻿@model LogisticsApp.Models.Truck
+
+@{
+    ViewData["Title"] = "Товары грузовика: " + Model.Brand + Model.Model + Model.StateNumber;
+}
+
+<h1>Товары грузовика: @Model.Brand @Model.Model @Model.StateNumber</h1>
+
+@if (Model.LoadedProducts.Any())
+{
+    <ul class="list-group">
+        @foreach (var loadedProduct in Model.LoadedProducts)
+        {
+            <li class="list-group-item">
+                @loadedProduct.OrderedProduct.FactoryProduct.Product.Title - Количество: @loadedProduct.Quantity
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>В этом грузовике пока нет товаров.</p>
+}
+
+<div>
+    <a href="@Url.Action("Index", "Truck")">Вернуться к списку грузовиков</a>
+</div>

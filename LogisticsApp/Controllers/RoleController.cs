@@ -24,11 +24,11 @@ namespace LogisticsApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AddRole()
         {
-            var model = new AddRoleViewModel
+            var roleModel = new AddRoleViewModel
             {
                 Roles = await _roleManager.Roles.ToListAsync()
             };
-            return View(model);
+            return View(roleModel);
         }
 
         [HttpPost]
