@@ -20,6 +20,11 @@ public class RoleController : Controller
     [HttpGet]
     public async Task<IActionResult> AddRole()
     {
+        if (!User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
         var model = new AddRoleViewModel
         {
             Roles = await _roleManager.Roles.ToListAsync()
@@ -30,6 +35,11 @@ public class RoleController : Controller
     [HttpPost]
     public async Task<IActionResult> AddRole(AddRoleViewModel roleModel)
     {
+        if (!User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
         if (string.IsNullOrEmpty(roleModel.RoleName))
         {
             ModelState.AddModelError("RoleName", "Роль должна быть выбрана.");
