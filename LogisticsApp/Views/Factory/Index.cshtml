@@ -1,0 +1,30 @@
+﻿@model LogisticsApp.Models.FactoryIndexViewModel
+
+@{
+    ViewData["Title"] = "Фабрики";
+}
+
+<h1>Фабрики</h1>
+
+<ul class="list-group">
+    @foreach (var factory in Model.Factories)
+    {
+        <li class="list-group-item">
+            <a href="@Url.Action("Products", "Factory", new { id = factory.Id })">
+                @factory.Title
+            </a> - Владелец фабрики: @factory.PortalUser.UserName
+
+            <a href="@Url.Action("Update", "Factory", new { id = factory.Id })" class="btn btn-warning btn-sm ml-2">Редактировать</a>
+            <a href="@Url.Action("Delete", "Factory", new { id = factory.Id })" class="btn btn-danger btn-sm ml-2">Удалить</a>
+        </li>
+    }
+</ul>
+
+@if (Model.ShowAddFactoryForm)
+{
+    <h2>Добавить новую фабрику</h2>
+
+    <form asp-action="Create" method="get">
+        <button type="submit" class="btn btn-primary">Перейти к добавлению фабрики</button>
+    </form>
+}

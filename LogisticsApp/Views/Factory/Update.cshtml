@@ -1,0 +1,21 @@
+﻿@model LogisticsApp.Models.UpdateFactoryViewModel
+
+@{
+    ViewData["Title"] = "Редактировать фабрику";
+}
+
+<h2>Редактировать фабрику</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Title">Название фабрики</label>
+        <input type="text" class="form-control" asp-for="Title" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+</form>
+
+<div>
+    <a href="@Url.Action("Index", "Factory")">Вернуться к списку фабрик</a>
+</div>

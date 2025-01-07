@@ -1,10 +1,12 @@
 ﻿@model LogisticsApp.Models.UpdateShopViewModel
 
+@{
+    ViewData["Title"] = "Редактировать магазин";
+}
+
 <h2>Редактировать магазин</h2>
 
 <form method="post">
-    @Html.AntiForgeryToken()
-
     <div class="form-group">
         <label for="Title">Название магазина</label>
         <input type="text" class="form-control" asp-for="Title" />

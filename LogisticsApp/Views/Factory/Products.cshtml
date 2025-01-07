@@ -1,0 +1,27 @@
+﻿@model LogisticsApp.Models.Factory
+
+@{
+    ViewData["Title"] = "Товары фабрики: " + Model.Title;
+}
+
+<h1>Товары фабрики: @Model.Title</h1>
+
+@if (Model.FactoryProducts.Any())
+{
+    <ul class="list-group">
+        @foreach (var factoryProduct in Model.FactoryProducts)
+        {
+            <li class="list-group-item">
+                @factoryProduct.Product.Title - Количество: @factoryProduct.Quantity
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>На этой фабрике пока нет товаров.</p>
+}
+
+<div>
+    <a href="@Url.Action("Index", "Factory")">Вернуться к списку фабрик</a>
+</div>

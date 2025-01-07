@@ -1,0 +1,38 @@
+﻿@model LogisticsApp.Models.CreateFactoryViewModel
+
+@{
+    ViewData["Title"] = "Добавить фабрику";
+}
+
+<h1>Добавить новую фабрику</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="Title">Название фабрики</label>
+        <input type="text" class="form-control" id="Title" name="Title" required />
+    </div>
+
+    <div class="form-group">
+        <label for="PortalUserId">Выберите ответственного пользователя</label>
+
+        @if (Model.Users.Any())
+        {
+            <select class="form-control" id="PortalUserId" name="PortalUserId" required>
+                @foreach (var user in Model.Users)
+                {
+                    <option value="@user.Value" selected="@((user.Value == Model.PortalUserId) ? "selected" : null)">
+                        @user.Text
+                    </option>
+                }
+            </select>
+        }
+        else
+        {
+            <p class="text-danger">Нет пользователей, с которыми можно связать фабрику.</p>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<a href="@Url.Action("Index", "Factory")" class="btn btn-secondary mt-3">Назад</a>
