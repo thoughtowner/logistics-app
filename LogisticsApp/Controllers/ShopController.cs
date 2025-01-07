@@ -131,5 +131,47 @@ namespace LogisticsApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [Route("Shop/{id}/Update")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id)
+        {
+            var shop = await _context.Shops.FindAsync(id);
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UpdateShopViewModel
+            {
+                Id = shop.Id,
+                Title = shop.Title
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("Shop/{id}/Update")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(UpdateShopViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var shop = await _context.Shops.FindAsync(model.Id);
+                if (shop == null)
+                {
+                    return NotFound();
+                }
+
+                shop.Title = model.Title;
+                _context.Update(shop);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(model);
+        }
     }
 }

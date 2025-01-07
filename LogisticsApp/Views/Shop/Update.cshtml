@@ -1,0 +1,19 @@
+﻿@model LogisticsApp.Models.UpdateShopViewModel
+
+<h2>Редактировать магазин</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label for="Title">Название магазина</label>
+        <input type="text" class="form-control" asp-for="Title" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+</form>
+
+<div>
+    <a href="@Url.Action("Index", "Shop")">Вернуться к списку магазинов</a>
+</div>
