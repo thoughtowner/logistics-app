@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace LogisticsApp.Views.Product
+namespace LogisticsApp.Views.Shop
 {
-    public class ShopModel : PageModel
+    public class ProductsModel : PageModel
     {
         public void OnGet()
         {

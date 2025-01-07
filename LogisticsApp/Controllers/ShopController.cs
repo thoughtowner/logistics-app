@@ -16,7 +16,6 @@ namespace LogisticsApp.Controllers
             _context = context;
         }
 
-        // GET: Shop
         public async Task<IActionResult> Index()
         {
             var shops = await _context.Shops
@@ -32,6 +31,22 @@ namespace LogisticsApp.Controllers
             };
 
             return View(model);
+        }
+
+        [Route("Shop/{id}/Products")]
+        public async Task<IActionResult> Products(int id)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.ShopProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            return View(shop);
         }
 
         [Authorize(Roles = "Admin")]

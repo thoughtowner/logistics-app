@@ -6,12 +6,11 @@
 
 <h1>Магазины</h1>
 
-<!-- Список магазинов -->
 <ul class="list-group">
     @foreach (var shop in Model.Shops)
     {
         <li class="list-group-item">
-            <a href="@Url.Action("Shop", "Product", new { id = shop.Id })">
+            <a href="@Url.Action("Products", "Shop", new { id = shop.Id })">
                 @shop.Title
             </a> - Владелец магазина: @shop.PortalUser.UserName
         </li>
