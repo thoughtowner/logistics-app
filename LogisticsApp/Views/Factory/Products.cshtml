@@ -6,13 +6,24 @@
 
 <h1>Товары фабрики: @Model.Title</h1>
 
+<div>
+    <a href="@Url.Action("AddProduct", "Factory", new { factoryId = Model.Id })" class="btn btn-primary mb-3">Добавить товар</a>
+</div>
+
 @if (Model.FactoryProducts.Any())
 {
     <ul class="list-group">
         @foreach (var factoryProduct in Model.FactoryProducts)
         {
-            <li class="list-group-item">
-                @factoryProduct.Product.Title - Количество: @factoryProduct.Quantity
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="@Url.Action("ProductDetails", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })">
+                    @factoryProduct.Product.Title
+                </a> - Количество: @factoryProduct.Quantity
+
+                <div>
+                    <a href="@Url.Action("UpdateProduct", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-warning btn-sm">Изменить количество</a>
+                    <a href="@Url.Action("DeleteProduct", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-danger btn-sm">Удалить</a>
+                </div>
             </li>
         }
     </ul>

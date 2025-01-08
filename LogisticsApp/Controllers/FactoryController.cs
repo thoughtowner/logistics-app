@@ -34,22 +34,6 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Factory/{id}/Products")]
-        public async Task<IActionResult> Products(int id)
-        {
-            var factory = await _context.Factories
-                .Include(f => f.FactoryProducts)
-                .ThenInclude(fp => fp.Product)
-                .FirstOrDefaultAsync(f => f.Id == id);
-
-            if (factory == null)
-            {
-                return NotFound();
-            }
-
-            return View(factory);
-        }
-
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -174,5 +158,228 @@ namespace LogisticsApp.Controllers
 
             return View(model);
         }
+
+        [Route("Factory/{id}/Products")]
+        public async Task<IActionResult> Products(int id)
+        {
+            var factory = await _context.Factories
+                .Include(f => f.FactoryProducts)
+                .ThenInclude(fp => fp.Product)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (factory == null)
+            {
+                return NotFound();
+            }
+
+            return View(factory);
+        }
+
+        [Route("Factory/{factoryId}/Products/{productId}")]
+        public async Task<IActionResult> ProductDetails(int factoryId, int productId)
+        {
+            var factory = await _context.Factories
+                .Include(f => f.FactoryProducts)
+                .ThenInclude(fp => fp.Product)
+                .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+            if (factory == null)
+            {
+                return NotFound();
+            }
+
+            var product = factory.FactoryProducts
+                .FirstOrDefault(fp => fp.ProductId == productId)?.Product;
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["FactoryId"] = factoryId;
+
+            return View(product);
+        }
+
+        [Route("Factory/{factoryId}/Products/Add")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddProduct(int factoryId)
+        {
+            var factory = await _context.Factories
+                .Include(f => f.FactoryProducts)
+                .ThenInclude(fp => fp.Product)
+                .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+            if (factory == null)
+            {
+                return NotFound();
+            }
+
+            var products = await _context.Products
+                .Where(p => !_context.FactoryProducts.Any(fp => fp.ProductId == p.Id && fp.FactoryId == factoryId))
+                .ToListAsync();
+
+            var model = new AddFactoryProductViewModel
+            {
+                FactoryId = factoryId,
+                Products = products.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Title
+                }).ToList()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("Factory/{factoryId}/Products/Add")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddProduct(int factoryId, AddFactoryProductViewModel model)
+        {
+            if (ModelState["FactoryId"]?.Errors.Count == 0 && ModelState["ProductId"]?.Errors.Count == 0 && ModelState["Quantity"]?.Errors.Count == 0)
+            {
+                var factory = await _context.Factories.FindAsync(model.FactoryId);
+
+                if (factory == null)
+                {
+                    return NotFound();
+                }
+
+                var existingProduct = await _context.FactoryProducts
+                    .FirstOrDefaultAsync(fp => fp.FactoryId == model.FactoryId && fp.ProductId == model.ProductId);
+
+                if (existingProduct != null)
+                {
+                    existingProduct.Quantity += model.Quantity;
+                }
+                else
+                {
+                    var factoryProduct = new FactoryProduct
+                    {
+                        FactoryId = model.FactoryId,
+                        ProductId = model.ProductId,
+                        Quantity = model.Quantity
+                    };
+
+                    _context.FactoryProducts.Add(factoryProduct);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products", new { id = model.FactoryId });
+            }
+
+            var products = await _context.Products
+                .Where(p => !_context.FactoryProducts.Any(fp => fp.ProductId == p.Id && fp.FactoryId == factoryId))
+                .ToListAsync();
+            model.Products = products.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.Title
+            }).ToList();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Route("Factory/{factoryId}/Products/{productId}/Delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProduct(int factoryId, int productId)
+        {
+            var factory = await _context.Factories
+                .Include(f => f.FactoryProducts)
+                .ThenInclude(fp => fp.Product)
+                .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+            if (factory == null)
+            {
+                return NotFound();
+            }
+
+            var factoryProduct = factory.FactoryProducts.FirstOrDefault(fp => fp.ProductId == productId);
+
+            if (factoryProduct == null)
+            {
+                return NotFound();
+            }
+
+            return View(factoryProduct);
+        }
+
+        [HttpPost]
+        [Route("Factory/{factoryId}/Products/{productId}/Delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProductConfirmed(int factoryId, int productId)
+        {
+            var factory = await _context.Factories
+                .Include(f => f.FactoryProducts)
+                .ThenInclude(fp => fp.Product)
+                .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+            if (factory == null)
+            {
+                return NotFound();
+            }
+
+            var factoryProduct = factory.FactoryProducts.FirstOrDefault(fp => fp.ProductId == productId);
+
+            if (factoryProduct == null)
+            {
+                return NotFound();
+            }
+
+            _context.FactoryProducts.Remove(factoryProduct);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Products", new { id = factoryId });
+        }
+
+        [Route("Factory/{factoryId}/Products/{productId}/Update")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateProduct(int factoryId, int productId)
+        {
+            var factoryProduct = await _context.FactoryProducts
+                .FirstOrDefaultAsync(fp => fp.FactoryId == factoryId && fp.ProductId == productId);
+
+            if (factoryProduct == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UpdateFactoryProductViewModel
+            {
+                FactoryId = factoryId,
+                ProductId = productId,
+                Quantity = factoryProduct.Quantity
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("Factory/{factoryId}/Products/{productId}/Update")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateProduct(UpdateFactoryProductViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var factoryProduct = await _context.FactoryProducts
+                    .FirstOrDefaultAsync(fp => fp.FactoryId == model.FactoryId && fp.ProductId == model.ProductId);
+
+                if (factoryProduct == null)
+                {
+                    return NotFound();
+                }
+
+                factoryProduct.Quantity = model.Quantity;
+                _context.FactoryProducts.Update(factoryProduct);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Products", new { id = model.FactoryId });
+            }
+
+            return View(model);
+        }
+
     }
 }

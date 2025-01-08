@@ -1,0 +1,14 @@
+﻿@model LogisticsApp.Models.FactoryProduct
+
+@{
+    ViewData["Title"] = "Удалить товар из фабрики";
+}
+
+<h1>Подтвердите удаление товара</h1>
+
+<p>Вы уверены, что хотите удалить товар "<strong>@Model.Product.Title</strong>" из фабрики "<strong>@Model.Factory.Title</strong>"?</p>
+
+<form asp-action="DeleteProductConfirmed" asp-route-factoryId="@Model.FactoryId" asp-route-productId="@Model.ProductId" method="post">
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a href="@Url.Action("Products", "Factory", new { id = Model.FactoryId })" class="btn btn-secondary">Отмена</a>
+</form>
