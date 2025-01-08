@@ -14,7 +14,7 @@
                 @shop.Title
             </a> - Владелец магазина: @shop.PortalUser.UserName
 
-                <a href="@Url.Action("Update", "Shop", new { id = shop.Id })" class="btn btn-warning btn-sm ml-2">Редактировать</a>
+            <a href="@Url.Action("Update", "Shop", new { id = shop.Id })" class="btn btn-warning btn-sm ml-2">Редактировать</a>
             <a href="@Url.Action("Delete", "Shop", new { id = shop.Id })" class="btn btn-danger btn-sm ml-2">Удалить</a>
         </li>
     }

@@ -1,0 +1,28 @@
+﻿@model LogisticsApp.Models.CreateProductViewModel
+
+@{
+    ViewData["Title"] = "Добавить товар";
+}
+
+<h1>Добавить новый товар</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="Title">Название товара</label>
+        <input type="text" class="form-control" id="Title" name="Title" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Mass">Масса (кг)</label>
+        <input type="number" class="form-control" id="Mass" name="Mass" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Volume">Объем (м³)</label>
+        <input type="number" class="form-control" id="Volume" name="Volume" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<a href="@Url.Action("Index", "Product")" class="btn btn-secondary mt-3">Назад</a>
