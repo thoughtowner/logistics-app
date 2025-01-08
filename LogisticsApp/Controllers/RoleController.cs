@@ -24,12 +24,26 @@ namespace LogisticsApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AddRole()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var availableRoles = await _roleManager.Roles
+                .Where(role => !userRoles.Contains(role.Name))
+                .ToListAsync();
+
             var roleModel = new AddRoleViewModel
             {
-                Roles = await _roleManager.Roles.ToListAsync()
+                Roles = availableRoles
             };
+
             return View(roleModel);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddRole(AddRoleViewModel roleModel)
@@ -146,7 +160,19 @@ namespace LogisticsApp.Controllers
                 }
             }
 
-            roleModel.Roles = await _roleManager.Roles.ToListAsync();
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(currentUser);
+
+            var availableRoles = await _roleManager.Roles
+                .Where(role => !userRoles.Contains(role.Name))
+                .ToListAsync();
+
+            roleModel.Roles = availableRoles;
             return View(roleModel);
         }
     }
