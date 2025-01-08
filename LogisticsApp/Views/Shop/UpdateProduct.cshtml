@@ -1,0 +1,18 @@
+﻿@model LogisticsApp.Models.UpdateShopProductViewModel
+
+@{
+    ViewData["Title"] = "Обновить количество товара";
+}
+
+<h1>Обновить количество товара</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Quantity">Количество</label>
+        <input type="number" class="form-control" id="Quantity" name="Quantity" min="1" value="@Model.Quantity" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+</form>
+
+<a href="@Url.Action("Products", "Shop", new { id = Model.ShopId })

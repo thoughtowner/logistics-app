@@ -34,22 +34,6 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Shop/{id}/Products")]
-        public async Task<IActionResult> Products(int id)
-        {
-            var shop = await _context.Shops
-                .Include(s => s.ShopProducts)
-                .ThenInclude(sp => sp.Product)
-                .FirstOrDefaultAsync(s => s.Id == id);
-
-            if (shop == null)
-            {
-                return NotFound();
-            }
-
-            return View(shop);
-        }
-
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -170,6 +154,228 @@ namespace LogisticsApp.Controllers
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
+            }
+
+            return View(model);
+        }
+
+        [Route("Shop/{id}/Products")]
+        public async Task<IActionResult> Products(int id)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.ShopProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            return View(shop);
+        }
+
+        [Route("Shop/{shopId}/Products/{productId}")]
+        public async Task<IActionResult> ProductDetails(int shopId, int productId)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.ShopProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(s => s.Id == shopId);
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            var product = shop.ShopProducts
+                .FirstOrDefault(sp => sp.ProductId == productId)?.Product;
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["ShopId"] = shopId;
+
+            return View(product);
+        }
+
+        [Route("Shop/{shopId}/Products/Add")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddProduct(int shopId)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.ShopProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(s => s.Id == shopId);
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            var products = await _context.Products
+                .Where(p => !_context.ShopProducts.Any(sp => sp.ProductId == p.Id && sp.ShopId == shopId))
+                .ToListAsync();
+
+            var model = new AddShopProductViewModel
+            {
+                ShopId = shopId,
+                Products = products.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Title
+                }).ToList()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("Shop/{shopId}/Products/Add")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddProduct(int shopId, AddShopProductViewModel model)
+        {
+            if (ModelState["ShopId"]?.Errors.Count == 0 && ModelState["ProductId"]?.Errors.Count == 0 && ModelState["Quantity"]?.Errors.Count == 0)
+            {
+                var shop = await _context.Shops.FindAsync(model.ShopId);
+
+                if (shop == null)
+                {
+                    return NotFound();
+                }
+
+                var existingProduct = await _context.ShopProducts
+                    .FirstOrDefaultAsync(sp => sp.ShopId == model.ShopId && sp.ProductId == model.ProductId);
+
+                if (existingProduct != null)
+                {
+                    existingProduct.Quantity += model.Quantity;
+                }
+                else
+                {
+                    var shopProduct = new ShopProduct
+                    {
+                        ShopId = model.ShopId,
+                        ProductId = model.ProductId,
+                        Quantity = model.Quantity
+                    };
+
+                    _context.ShopProducts.Add(shopProduct);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products", new { id = model.ShopId });
+            }
+
+            var products = await _context.Products
+                .Where(p => !_context.ShopProducts.Any(sp => sp.ProductId == p.Id && sp.ShopId == shopId))
+                .ToListAsync();
+            model.Products = products.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.Title
+            }).ToList();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Route("Shop/{shopId}/Products/{productId}/Delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProduct(int shopId, int productId)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.ShopProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(s => s.Id == shopId);
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            var shopProduct = shop.ShopProducts.FirstOrDefault(sp => sp.ProductId == productId);
+
+            if (shopProduct == null)
+            {
+                return NotFound();
+            }
+
+            return View(shopProduct);
+        }
+
+        [HttpPost]
+        [Route("Shop/{shopId}/Products/{productId}/Delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProductConfirmed(int shopId, int productId)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.ShopProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(s => s.Id == shopId);
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            var shopProduct = shop.ShopProducts.FirstOrDefault(sp => sp.ProductId == productId);
+
+            if (shopProduct == null)
+            {
+                return NotFound();
+            }
+
+            _context.ShopProducts.Remove(shopProduct);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Products", new { id = shopId });
+        }
+
+        [Route("Shop/{shopId}/Products/{productId}/Update")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateProduct(int shopId, int productId)
+        {
+            var shopProduct = await _context.ShopProducts
+                .FirstOrDefaultAsync(sp => sp.ShopId == shopId && sp.ProductId == productId);
+
+            if (shopProduct == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UpdateShopProductViewModel
+            {
+                ShopId = shopId,
+                ProductId = productId,
+                Quantity = shopProduct.Quantity
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("Shop/{shopId}/Products/{productId}/Update")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateProduct(UpdateShopProductViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var shopProduct = await _context.ShopProducts
+                    .FirstOrDefaultAsync(sp => sp.ShopId == model.ShopId && sp.ProductId == model.ProductId);
+
+                if (shopProduct == null)
+                {
+                    return NotFound();
+                }
+
+                shopProduct.Quantity = model.Quantity;
+                _context.ShopProducts.Update(shopProduct);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Products", new { id = model.ShopId });
             }
 
             return View(model);

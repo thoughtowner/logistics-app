@@ -1,0 +1,36 @@
+﻿@model LogisticsApp.Models.AddShopProductViewModel
+
+@{
+    ViewData["Title"] = "Добавить товар в магазин";
+}
+
+<h1>Добавить товар в магазин</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="ProductId">Выберите продукт</label>
+
+        @if (Model.Products.Any())
+        {
+            <select class="form-control" id="ProductId" name="ProductId" required>
+                @foreach (var product in Model.Products)
+                {
+                    <option value="@product.Value">@product.Text</option>
+                }
+            </select>
+        }
+        else
+        {
+            <p class="text-danger">Нет продуктов, которые можно добавить в магазин.</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="Quantity">Количество</label>
+        <input type="number" class="form-control" id="Quantity" name="Quantity" min="1" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<a href="@Url.Action("Products", "Shop", new { id = Model.ShopId })" class="btn btn-secondary mt-3">Назад</a>

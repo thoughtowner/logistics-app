@@ -1,0 +1,16 @@
+﻿@model LogisticsApp.Models.Product
+
+@{
+    ViewData["Title"] = "Информация о продукте: " + Model.Title;
+}
+
+<h1>Информация о продукте: @Model.Title</h1>
+
+<div>
+    <p><strong>Масса:</strong> @Model.Mass кг</p>
+    <p><strong>Объем:</strong> @Model.Volume литров</p>
+</div>
+
+<div>
+    <a href="@Url.Action("Products", "Shop", new { id = ViewData["ShopId"] })">Вернуться к товарам магазина</a>
+</div>

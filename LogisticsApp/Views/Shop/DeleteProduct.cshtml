@@ -1,0 +1,14 @@
+﻿@model LogisticsApp.Models.ShopProduct
+
+@{
+    ViewData["Title"] = "Удалить товар из магазина";
+}
+
+<h1>Подтвердите удаление товара</h1>
+
+<p>Вы уверены, что хотите удалить товар "<strong>@Model.Product.Title</strong>" из магазина "<strong>@Model.Shop.Title</strong>"?</p>
+
+<form asp-action="DeleteProductConfirmed" asp-route-shopId="@Model.ShopId" asp-route-productId="@Model.ProductId" method="post">
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a href="@Url.Action("Products", "Shop", new { id = Model.ShopId })" class="btn btn-secondary">Отмена</a>
+</form>
