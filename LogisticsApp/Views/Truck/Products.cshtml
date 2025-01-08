@@ -11,8 +11,10 @@
     <ul class="list-group">
         @foreach (var loadedProduct in Model.LoadedProducts)
         {
-            <li class="list-group-item">
-                @loadedProduct.OrderedProduct.FactoryProduct.Product.Title - Количество: @loadedProduct.Quantity
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="@Url.Action("ProductDetails", "Truck", new { truckId = Model.Id, productId = loadedProduct.OrderedProduct.FactoryProduct.Product.Id })">
+                    @loadedProduct.OrderedProduct.FactoryProduct.Product.Title
+                </a> - Количество: @loadedProduct.Quantity
             </li>
         }
     </ul>

@@ -34,22 +34,6 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Truck/{id}/Products")]
-        public async Task<IActionResult> Products(int id)
-        {
-            var truck = await _context.Trucks
-                .Include(t => t.LoadedProducts)
-                .ThenInclude(lp => lp.OrderedProduct)
-                .FirstOrDefaultAsync(t => t.Id == id);
-
-            if (truck == null)
-            {
-                return NotFound();
-            }
-
-            return View(truck);
-        }
-
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -185,6 +169,48 @@ namespace LogisticsApp.Controllers
             }
 
             return View(truckModel);
+        }
+
+        [Route("Truck/{id}/Products")]
+        public async Task<IActionResult> Products(int id)
+        {
+            var truck = await _context.Trucks
+                .Include(t => t.LoadedProducts)
+                .ThenInclude(tp => tp.OrderedProduct.FactoryProduct.Product)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (truck == null)
+            {
+                return NotFound();
+            }
+
+            return View(truck);
+        }
+
+        [Route("Truck/{truckId}/Products/{productId}")]
+        public async Task<IActionResult> ProductDetails(int truckId, int productId)
+        {
+            var truck = await _context.Trucks
+                .Include(t => t.LoadedProducts)
+                .ThenInclude(tp => tp.OrderedProduct.FactoryProduct.Product)
+                .FirstOrDefaultAsync(t => t.Id == truckId);
+
+            if (truck == null)
+            {
+                return NotFound();
+            }
+
+            var product = truck.LoadedProducts
+                .FirstOrDefault(tp => tp.OrderedProduct.FactoryProduct.ProductId == productId)?.OrderedProduct.FactoryProduct.Product;
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["TruckId"] = truckId;
+
+            return View(product);
         }
     }
 }
