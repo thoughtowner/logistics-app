@@ -171,13 +171,13 @@ namespace LogisticsApp.Controllers
             return View(truckModel);
         }
 
-        [Route("Truck/{id}/Products")]
-        public async Task<IActionResult> Products(int id)
+        [Route("Truck/{truckId}/Products")]
+        public async Task<IActionResult> Products(int truckId)
         {
             var truck = await _context.Trucks
                 .Include(t => t.LoadedProducts)
-                .ThenInclude(tp => tp.OrderedProduct.FactoryProduct.Product)
-                .FirstOrDefaultAsync(t => t.Id == id);
+                    .ThenInclude(tp => tp.OrderedProduct.FactoryProduct.Product)
+                .FirstOrDefaultAsync(t => t.Id == truckId);
 
             if (truck == null)
             {
@@ -211,6 +211,60 @@ namespace LogisticsApp.Controllers
             ViewData["TruckId"] = truckId;
 
             return View(product);
+        }
+
+        [HttpPost]
+        [Route("Truck/{truckId}/DeliverProducts")]
+        [Authorize(Roles = "Driver")]
+        public async Task<IActionResult> DeliverProducts(int truckId)
+        {
+            var truck = await _context.Trucks
+                .Include(t => t.LoadedProducts)
+                    .ThenInclude(lp => lp.OrderedProduct)
+                    .ThenInclude(op => op.FactoryProduct)
+                    .ThenInclude(fp => fp.Product)
+                .Include(t => t.LoadedProducts)
+                    .ThenInclude(lp => lp.OrderedProduct)
+                    .ThenInclude(op => op.Shop)
+                .FirstOrDefaultAsync(t => t.Id == truckId);
+
+            if (truck == null)
+            {
+                return NotFound();
+            }
+
+            var loadedProducts = truck.LoadedProducts.ToList();
+
+            foreach (var loadedProduct in loadedProducts)
+            {
+                _context.LoadedProducts.Remove(loadedProduct);
+
+                var orderedProduct = loadedProduct.OrderedProduct;
+                var shop = orderedProduct.Shop;
+                var product = orderedProduct.FactoryProduct.Product;
+
+                var shopProduct = await _context.ShopProducts
+                    .FirstOrDefaultAsync(sp => sp.ShopId == shop.Id && sp.ProductId == product.Id);
+
+                if (shopProduct == null)
+                {
+                    var newShopProduct = new ShopProduct
+                    {
+                        ShopId = shop.Id,
+                        ProductId = product.Id,
+                        Quantity = loadedProduct.Quantity
+                    };
+                    _context.ShopProducts.Add(newShopProduct);
+                }
+                else
+                {
+                    shopProduct.Quantity += loadedProduct.Quantity;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Products", new { truckId });
         }
     }
 }

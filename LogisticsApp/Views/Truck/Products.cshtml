@@ -18,6 +18,12 @@
             </li>
         }
     </ul>
+    @if (User.IsInRole("Driver"))
+    {
+        <form method="post" asp-action="DeliverProducts" asp-route-truckId="@Model.Id">
+            <button type="submit" class="btn btn-danger mt-3">Отвезти продукты</button>
+        </form>
+    }
 }
 else
 {

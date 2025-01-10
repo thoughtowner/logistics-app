@@ -10,7 +10,7 @@
     @foreach (var truck in Model.Trucks)
     {
         <li class="list-group-item">
-            <a href="@Url.Action("Products", "Truck", new { id = truck.Id })">
+            <a href="@Url.Action("Products", "Truck", new { truckId = truck.Id })">
                 @truck.Brand @truck.Model @truck.StateNumber
             </a> - Водитель: @truck.PortalUser.UserName
 
