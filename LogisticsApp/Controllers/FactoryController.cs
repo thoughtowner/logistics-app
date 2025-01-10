@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace LogisticsApp.Controllers
 {
@@ -381,5 +382,82 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
+        [Route("Factory/{factoryId}/Products/{productId}/Order")]
+        [Authorize(Roles = "ShopOwner")]
+        public async Task<IActionResult> Order(int factoryId, int productId)
+        {
+            var factoryProduct = await _context.FactoryProducts
+                .Include(fp => fp.Product)
+                .FirstOrDefaultAsync(fp => fp.FactoryId == factoryId && fp.ProductId == productId);
+
+            if (factoryProduct == null)
+            {
+                return NotFound();
+            }
+
+            var model = new OrderProductViewModel
+            {
+                ProductId = productId,
+                FactoryProductId = factoryProduct.Id,
+                MaxQuantity = factoryProduct.Quantity
+            };
+
+            ViewData["FactoryId"] = factoryId;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("Factory/{factoryId}/Products/{productId}/Order")]
+        [Authorize(Roles = "ShopOwner")]
+        public async Task<IActionResult> Order(int factoryId, int productId, OrderProductViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var factoryProduct = await _context.FactoryProducts
+                    .FirstOrDefaultAsync(fp => fp.FactoryId == factoryId && fp.ProductId == productId);
+
+                if (factoryProduct == null || factoryProduct.Quantity < model.Quantity)
+                {
+                    ModelState.AddModelError("", "Недостаточно товара для заказа.");
+                    return View(model);
+                }
+
+                var shop = await _context.Shops
+                    .FirstOrDefaultAsync(s => s.PortalUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                if (shop == null)
+                {
+                    ModelState.AddModelError("", "У вас нет магазина, с которым можно связать заказ.");
+                    return View(model);
+                }
+
+                var existingOrder = await _context.OrderedProducts
+                    .FirstOrDefaultAsync(op => op.ShopId == shop.Id && op.FactoryProductId == factoryProduct.Id);
+
+                if (existingOrder != null)
+                {
+                    existingOrder.Quantity += model.Quantity;
+                }
+                else
+                {
+                    var orderedProduct = new OrderedProduct
+                    {
+                        Quantity = model.Quantity,
+                        FactoryProductId = factoryProduct.Id,
+                        ShopId = shop.Id
+                    };
+                    _context.OrderedProducts.Add(orderedProduct);
+                }
+
+                factoryProduct.Quantity -= model.Quantity;
+
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Products", new { id = factoryId });
+            }
+
+            return View(model);
+        }
     }
 }

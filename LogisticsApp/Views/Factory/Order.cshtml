@@ -1,0 +1,21 @@
+﻿@model LogisticsApp.Models.OrderProductViewModel
+
+@{
+    ViewData["Title"] = "Оформить заказ: " + Model.ProductId;
+}
+
+<h1>Оформить заказ для продукта</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Quantity">Количество для заказа</label>
+        <input type="number" class="form-control" id="Quantity" name="Quantity" value="1" min="1" max="@Model.MaxQuantity" required />
+        <small class="form-text text-muted">Максимальное количество для заказа: @Model.MaxQuantity</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Заказать</button>
+</form>
+
+<div>
+    <a href="@Url.Action("Products", "Factory", new { id = ViewData["FactoryId"] })">Вернуться к товарам фабрики</a>
+</div>

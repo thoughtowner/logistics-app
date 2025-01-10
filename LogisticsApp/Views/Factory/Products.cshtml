@@ -23,6 +23,11 @@
                 <div>
                     <a href="@Url.Action("UpdateProduct", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-warning btn-sm">Изменить количество</a>
                     <a href="@Url.Action("DeleteProduct", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-danger btn-sm">Удалить</a>
+
+                    @if (User.IsInRole("ShopOwner"))
+                    {
+                        <a href="@Url.Action("Order", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-success btn-sm ml-2">Заказать</a>
+                    }
                 </div>
             </li>
         }
