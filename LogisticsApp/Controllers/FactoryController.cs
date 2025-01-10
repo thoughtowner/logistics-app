@@ -382,6 +382,56 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
+        [Route("Factory/{factoryId}/Products/{productId}/Produce")]
+        [Authorize(Roles = "FactoryOwner")]
+        public async Task<IActionResult> Produce(int factoryId, int productId)
+        {
+            var factoryProduct = await _context.FactoryProducts
+                .FirstOrDefaultAsync(fp => fp.FactoryId == factoryId && fp.ProductId == productId);
+
+            if (factoryProduct == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ProduceProductViewModel
+            {
+                FactoryId = factoryId,
+                ProductId = productId
+            };
+
+            ViewData["FactoryId"] = factoryId;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("Factory/{factoryId}/Products/{productId}/Produce")]
+        [Authorize(Roles = "FactoryOwner")]
+        public async Task<IActionResult> Produce(int factoryId, int productId, ProduceProductViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var factoryProduct = await _context.FactoryProducts
+                    .FirstOrDefaultAsync(fp => fp.FactoryId == model.FactoryId && fp.ProductId == model.ProductId);
+
+                if (factoryProduct == null)
+                {
+                    return NotFound();
+                }
+
+                factoryProduct.Quantity += model.QuantityToProduce;
+
+                _context.Update(factoryProduct);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Products", new { id = factoryId });
+            }
+
+            return View(model);
+        }
+
+
         [Route("Factory/{factoryId}/Products/{productId}/Order")]
         [Authorize(Roles = "ShopOwner")]
         public async Task<IActionResult> Order(int factoryId, int productId)

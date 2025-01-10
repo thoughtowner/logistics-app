@@ -28,6 +28,11 @@
                     {
                         <a href="@Url.Action("Order", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-success btn-sm ml-2">Заказать</a>
                     }
+
+                    @if (User.IsInRole("FactoryOwner"))
+                    {
+                        <a href="@Url.Action("Produce", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-success btn-sm">Произвести</a>
+                    }
                 </div>
             </li>
         }

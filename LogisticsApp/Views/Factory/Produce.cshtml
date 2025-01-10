@@ -1,0 +1,20 @@
+﻿@model LogisticsApp.Models.ProduceProductViewModel
+
+@{
+    ViewData["Title"] = "Произвести продукт";
+}
+
+<h1>Произвести продукт</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="QuantityToProduce">Количество для производства</label>
+        <input type="number" class="form-control" id="QuantityToProduce" name="QuantityToProduce" min="1" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Произвести</button>
+</form>
+
+<div>
+    <a href="@Url.Action("Products", "Factory", new { id = ViewData["FactoryId"] })">Вернуться к товарам фабрики</a>
+</div>
