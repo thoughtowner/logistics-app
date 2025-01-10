@@ -400,8 +400,6 @@ namespace LogisticsApp.Controllers
                 ProductId = productId
             };
 
-            ViewData["FactoryId"] = factoryId;
-
             return View(model);
         }
 
@@ -431,6 +429,46 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Route("Factory/{factoryId}/Products/ProduceNewProduct")]
+        [Authorize(Roles = "FactoryOwner")]
+        public IActionResult ProduceNewProduct(int factoryId)
+        {
+            return View(new ProduceNewProductViewModel { FactoryId = factoryId });
+        }
+
+        [HttpPost]
+        [Route("Factory/{factoryId}/Products/ProduceNewProduct")]
+        [Authorize(Roles = "FactoryOwner")]
+        public async Task<IActionResult> ProduceNewProduct(ProduceNewProductViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var product = new Product
+                {
+                    Title = model.Title,
+                    Mass = model.Mass,
+                    Volume = model.Volume
+                };
+
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+
+                var factoryProduct = new FactoryProduct
+                {
+                    FactoryId = model.FactoryId,
+                    ProductId = product.Id,
+                    Quantity = model.Quantity
+                };
+
+                _context.FactoryProducts.Add(factoryProduct);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Products", new { id = model.FactoryId });
+            }
+
+            return View(model);
+        }
 
         [Route("Factory/{factoryId}/Products/{productId}/Order")]
         [Authorize(Roles = "ShopOwner")]
@@ -447,12 +485,11 @@ namespace LogisticsApp.Controllers
 
             var model = new OrderProductViewModel
             {
+                FactoryId = factoryId,
                 ProductId = productId,
                 FactoryProductId = factoryProduct.Id,
                 MaxQuantity = factoryProduct.Quantity
             };
-
-            ViewData["FactoryId"] = factoryId;
 
             return View(model);
         }

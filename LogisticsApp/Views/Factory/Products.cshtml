@@ -6,9 +6,19 @@
 
 <h1>Товары фабрики: @Model.Title</h1>
 
-<div>
-    <a href="@Url.Action("AddProduct", "Factory", new { factoryId = Model.Id })" class="btn btn-primary mb-3">Добавить товар</a>
-</div>
+@if (User.IsInRole("FactoryOwner"))
+{
+    <div>
+        <a href="@Url.Action("ProduceNewProduct", "Factory", new { factoryId = Model.Id })" class="btn btn-success mb-3">Произвести новый продукт</a>
+    </div>
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <div>
+        <a href="@Url.Action("AddProduct", "Factory", new { factoryId = Model.Id })" class="btn btn-primary mb-3">Добавить товар</a>
+    </div>
+}
 
 @if (Model.FactoryProducts.Any())
 {

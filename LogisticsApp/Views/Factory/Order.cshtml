@@ -17,5 +17,5 @@
 </form>
 
 <div>
-    <a href="@Url.Action("Products", "Factory", new { id = ViewData["FactoryId"] })">Вернуться к товарам фабрики</a>
+    <a href="@Url.Action("Products", "Factory", new { id = Model.FactoryId })" class="btn btn-secondary mt-3">Назад</a>
 </div>

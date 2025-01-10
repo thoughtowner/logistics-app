@@ -1,0 +1,35 @@
+﻿@model LogisticsApp.Models.ProduceNewProductViewModel
+
+@{
+    ViewData["Title"] = "Произвести новый продукт";
+}
+
+<h1>Произвести новый продукт</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Title">Название продукта</label>
+        <input type="text" class="form-control" id="Title" name="Title" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Mass">Масса (кг)</label>
+        <input type="number" class="form-control" id="Mass" name="Mass" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Volume">Объем (литры)</label>
+        <input type="number" class="form-control" id="Volume" name="Volume" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Quantity">Количество для производства</label>
+        <input type="number" class="form-control" id="Quantity" name="Quantity" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Произвести</button>
+</form>
+
+<div>
+    <a href="@Url.Action("Products", "Factory", new { id = Model.FactoryId })" class="btn btn-secondary mt-3">Назад</a>
+</div>
