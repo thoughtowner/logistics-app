@@ -1,0 +1,33 @@
+﻿@model IEnumerable<LogisticsApp.Models.OrderedProductViewModel>
+
+@using System.Security.Claims
+
+
+@{
+    ViewData["Title"] = "Заказанные продукты";
+}
+
+<h1>Заказанные продукты</h1>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item">
+                <a href="@Url.Action("ProductDetails", "OrderedProduct", new { id = item.ProductId })">
+                    @item.ProductName - @item.ShopName - Количество: @item.Quantity
+                </a>
+
+                @if (User.IsInRole("Driver"))
+                {
+                    <a href="@Url.Action("LoadProduct", "OrderedProduct", new { orderedProductId = item.Id })" class="btn btn-primary btn-sm">Погрузить</a>
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Нет заказанных продуктов.</p>
+}

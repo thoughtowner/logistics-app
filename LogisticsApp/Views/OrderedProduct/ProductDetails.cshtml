@@ -1,0 +1,17 @@
+﻿@model LogisticsApp.Models.OrderedProduct
+
+@{
+    ViewData["Title"] = "Детали заказанного продукта";
+}
+
+<h1>Детали продукта: @Model.FactoryProduct.Product.Title</h1>
+
+<div>
+    <p><strong>Название:</strong> @Model.FactoryProduct.Product.Title</p>
+    <p><strong>Магазин:</strong> @Model.Shop.Title</p>
+    <p><strong>Количество:</strong> @Model.Quantity</p>
+</div>
+
+<div>
+    <a href="@Url.Action("Index", "OrderedProduct")" class="btn btn-secondary">Назад к списку заказанных продуктов</a>
+</div>

@@ -1,0 +1,24 @@
+﻿@model LogisticsApp.Models.LoadProductViewModel
+
+@{
+    ViewData["Title"] = "Погрузка продукта: " + Model.ProductName;
+}
+
+<h1>Погрузка продукта: @Model.ProductName</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Quantity">Количество для погрузки</label>
+        <input type="number" class="form-control" id="Quantity" name="Quantity" min="1" max="@Model.AvailableQuantity" value="@Model.Quantity" required />
+        <span class="text-danger" asp-validation-for="Quantity"></span>
+    </div>
+
+    <input type="hidden" name="ProductName" value="@Model.ProductName" />
+    <input type="hidden" name="AvailableQuantity" value="@Model.AvailableQuantity" />
+
+    <button type="submit" class="btn btn-primary">Погрузить</button>
+</form>
+
+<div>
+    <a href="@Url.Action("Index", "OrderedProduct")" class="btn btn-secondary mt-3">Назад к заказанным продуктам</a>
+</div>
