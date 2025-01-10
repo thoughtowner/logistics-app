@@ -11,18 +11,4 @@
     <p><strong>Объем:</strong> @Model.Volume литров</p>
 </div>
 
-<div>
-    <h3>Доступные магазины:</h3>
-    <ul>
-        @foreach (var shopProduct in Model.ShopProducts)
-        {
-            <li>
-                <a href="@Url.Action("Details", "Shop", new { shopId = shopProduct.Shop.Id, productId = Model.Id })">
-                    @shopProduct.Shop.Title
-                </a>
-            </li>
-        }
-    </ul>
-</div>
-
 <a href="@Url.Action("Index", "Product")" class="btn btn-secondary">Вернуться к списку товаров</a>

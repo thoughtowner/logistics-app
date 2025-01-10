@@ -18,10 +18,7 @@ namespace LogisticsApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var products = await _context.Products
-                .Include(p => p.ShopProducts)
-                .ThenInclude(sp => sp.Shop)
-                .ToListAsync();
+            var products = await _context.Products.ToListAsync();
 
             return View(products);
         }
@@ -29,10 +26,7 @@ namespace LogisticsApp.Controllers
         [Route("Product/{productId}")]
         public async Task<IActionResult> Details(int productId)
         {
-            var product = await _context.Products
-                .Include(p => p.ShopProducts)
-                .ThenInclude(sp => sp.Shop)
-                .FirstOrDefaultAsync(p => p.Id == productId);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
             if (product == null)
             {

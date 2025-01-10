@@ -10,7 +10,7 @@
     @foreach (var product in Model)
     {
         <li class="list-group-item">
-            <a href="@Url.Action("ProductDetails", "Product", new { productId = product.Id })">
+            <a href="@Url.Action("Details", "Product", new { productId = product.Id })">
                 @product.Title
             </a> - Масса: @product.Mass кг, Объем: @product.Volume м³
 
