@@ -15,7 +15,7 @@
         @foreach (var item in Model)
         {
             <li class="list-group-item">
-                <a href="@Url.Action("ProductDetails", "OrderedProduct", new { id = item.ProductId })">
+                <a href="@Url.Action("ProductDetails", "OrderedProduct", new { id = item.Id })">
                     @item.ProductName - @item.ShopName - Количество: @item.Quantity
                 </a>
 

@@ -23,11 +23,6 @@ namespace LogisticsApp.Controllers
         [Route("OrderedProducts")]
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            var roles = await _userManager.GetRolesAsync(user);
-
-            ViewData["Roles"] = roles;
-
             var orderedProducts = await _context.OrderedProducts
                 .Include(op => op.FactoryProduct)
                     .ThenInclude(fp => fp.Product)

@@ -1,0 +1,25 @@
+﻿@model IEnumerable<LogisticsApp.Models.LoadedProductViewModel>
+
+@{
+    ViewData["Title"] = "Загруженные продукты";
+}
+
+<h1>Загруженные продукты</h1>
+
+@if (Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item">
+                <a href="@Url.Action("ProductDetails", "LoadedProduct", new { orderedProductId = item.OrderedProductId, truckId = item.TruckId, productId = item.ProductId })">
+                    @item.ProductName - @item.TruckBrand @item.TruckModel - Количество: @item.Quantity
+                </a>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Нет загруженных продуктов.</p>
+}
