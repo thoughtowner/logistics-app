@@ -1,47 +1,47 @@
-﻿@model LogisticsApp.Models.Factory
+﻿@model LogisticsApp.Models.FactoryOwnerViewModel
 
 @{
-    ViewData["Title"] = "Товары фабрики: " + Model.Title;
+    ViewData["Title"] = "Товары фабрики: " + Model.Factory.Title;
 }
 
-<h1>Товары фабрики: @Model.Title</h1>
+<h1>Товары фабрики: @Model.Factory.Title</h1>
 
-@if (User.IsInRole("FactoryOwner"))
+@if (Model.Factory.PortalUserId == Model.CurrentUserId)
 {
     <div>
-        <a href="@Url.Action("ProduceNewProduct", "Factory", new { factoryId = Model.Id })" class="btn btn-success mb-3">Произвести новый продукт</a>
+        <a href="@Url.Action("ProduceNewProduct", "Factory", new { factoryId = Model.Factory.Id })" class="btn btn-success mb-3">Произвести новый продукт</a>
     </div>
 }
 
 @if (User.IsInRole("Admin"))
 {
     <div>
-        <a href="@Url.Action("AddProduct", "Factory", new { factoryId = Model.Id })" class="btn btn-primary mb-3">Добавить товар</a>
+        <a href="@Url.Action("AddProduct", "Factory", new { factoryId = Model.Factory.Id })" class="btn btn-primary mb-3">Добавить товар</a>
     </div>
 }
 
-@if (Model.FactoryProducts.Any())
+@if (Model.Factory.FactoryProducts.Any())
 {
     <ul class="list-group">
-        @foreach (var factoryProduct in Model.FactoryProducts)
+        @foreach (var factoryProduct in Model.Factory.FactoryProducts)
         {
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="@Url.Action("ProductDetails", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })">
+                <a href="@Url.Action("ProductDetails", "Factory", new { factoryId = Model.Factory.Id, productId = factoryProduct.Product.Id })">
                     @factoryProduct.Product.Title
                 </a> - Количество: @factoryProduct.Quantity
 
                 <div>
-                    <a href="@Url.Action("UpdateProduct", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-warning btn-sm">Изменить количество</a>
-                    <a href="@Url.Action("DeleteProduct", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-danger btn-sm">Удалить</a>
+                    <a href="@Url.Action("UpdateProduct", "Factory", new { factoryId = Model.Factory.Id, productId = factoryProduct.Product.Id })" class="btn btn-warning btn-sm">Изменить количество</a>
+                    <a href="@Url.Action("DeleteProduct", "Factory", new { factoryId = Model.Factory.Id, productId = factoryProduct.Product.Id })" class="btn btn-danger btn-sm">Удалить</a>
 
                     @if (User.IsInRole("ShopOwner"))
                     {
-                        <a href="@Url.Action("Order", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-success btn-sm ml-2">Заказать</a>
+                        <a href="@Url.Action("Order", "Factory", new { factoryId = Model.Factory.Id, productId = factoryProduct.Product.Id })" class="btn btn-success btn-sm ml-2">Заказать</a>
                     }
 
-                    @if (User.IsInRole("FactoryOwner"))
+                    @if (Model.Factory.PortalUserId == Model.CurrentUserId)
                     {
-                        <a href="@Url.Action("Produce", "Factory", new { factoryId = Model.Id, productId = factoryProduct.Product.Id })" class="btn btn-success btn-sm">Произвести</a>
+                        <a href="@Url.Action("Produce", "Factory", new { factoryId = Model.Factory.Id, productId = factoryProduct.Product.Id })" class="btn btn-success btn-sm">Произвести</a>
                     }
                 </div>
             </li>

@@ -17,6 +17,8 @@ namespace LogisticsApp.Controllers
             _context = context;
         }
 
+        [Route("Shops")]
+        [Authorize(Roles = "ShopOwner, Admin")]
         public async Task<IActionResult> Index()
         {
             var shops = await _context.Shops
@@ -34,6 +36,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
+        [Route("Shops/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -55,6 +58,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
+        [Route("Shops/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CreateShopViewModel model)
         {
@@ -86,7 +90,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Shop/{id}/Delete")]
+        [Route("Shops/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -103,7 +107,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Shop/{id}/Delete")]
+        [Route("Shops/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -117,7 +121,7 @@ namespace LogisticsApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Route("Shop/{id}/Update")]
+        [Route("Shops/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id)
         {
@@ -137,7 +141,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Shop/{id}/Update")]
+        [Route("Shops/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(UpdateShopViewModel model)
         {
@@ -159,7 +163,8 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Shop/{id}/Products")]
+        [Route("Shops/{id}/Products")]
+        [Authorize(Roles = "ShopOwner, Admin")]
         public async Task<IActionResult> Products(int id)
         {
             var shop = await _context.Shops
@@ -175,7 +180,8 @@ namespace LogisticsApp.Controllers
             return View(shop);
         }
 
-        [Route("Shop/{shopId}/Products/{productId}")]
+        [Route("Shops/{shopId}/Products/{productId}")]
+        [Authorize(Roles = "ShopOwner, Admin")]
         public async Task<IActionResult> ProductDetails(int shopId, int productId)
         {
             var shop = await _context.Shops
@@ -201,7 +207,7 @@ namespace LogisticsApp.Controllers
             return View(product);
         }
 
-        [Route("Shop/{shopId}/Products/Add")]
+        [Route("Shops/{shopId}/Products/AddProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProduct(int shopId)
         {
@@ -233,7 +239,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Shop/{shopId}/Products/Add")]
+        [Route("Shops/{shopId}/Products/AddProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProduct(int shopId, AddShopProductViewModel model)
         {
@@ -282,7 +288,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpGet]
-        [Route("Shop/{shopId}/Products/{productId}/Delete")]
+        [Route("Shops/{shopId}/Products/{productId}/DeleteProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct(int shopId, int productId)
         {
@@ -307,7 +313,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Shop/{shopId}/Products/{productId}/Delete")]
+        [Route("Shops/{shopId}/Products/{productId}/DeleteProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProductConfirmed(int shopId, int productId)
         {
@@ -334,7 +340,7 @@ namespace LogisticsApp.Controllers
             return RedirectToAction("Products", new { id = shopId });
         }
 
-        [Route("Shop/{shopId}/Products/{productId}/Update")]
+        [Route("Shops/{shopId}/Products/{productId}/UpdateProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(int shopId, int productId)
         {
@@ -357,7 +363,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Shop/{shopId}/Products/{productId}/Update")]
+        [Route("Shops/{shopId}/Products/{productId}/UpdateProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(UpdateShopProductViewModel model)
         {

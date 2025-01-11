@@ -31,7 +31,7 @@ namespace LogisticsApp.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [Route("Roles/AddRole")]
         public async Task<IActionResult> AddRole()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -55,6 +55,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
+        [Route("Roles/AddRole")]
         public async Task<IActionResult> AddRole(AddRoleViewModel roleModel)
         {
             if (string.IsNullOrEmpty(roleModel.RoleName))

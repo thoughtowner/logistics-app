@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace LogisticsApp.Controllers
 {
@@ -12,12 +13,16 @@ namespace LogisticsApp.Controllers
     public class FactoryController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<PortalUser> _userManager;
 
-        public FactoryController(ApplicationDbContext context)
+        public FactoryController(ApplicationDbContext context, UserManager<PortalUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
+        [Route("Factories")]
+        [Authorize(Roles = "FactoryOwner, ShopOwner, Admin")]
         public async Task<IActionResult> Index()
         {
             var factories = await _context.Factories
@@ -35,6 +40,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
+        [Route("Factories/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -56,6 +62,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
+        [Route("Factories/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CreateFactoryViewModel model)
         {
@@ -87,7 +94,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Factory/{id}/Delete")]
+        [Route("Factories/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -104,7 +111,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{id}/Delete")]
+        [Route("Factories/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -118,7 +125,7 @@ namespace LogisticsApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Route("Factory/{id}/Update")]
+        [Route("Factories/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id)
         {
@@ -138,7 +145,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{id}/Update")]
+        [Route("Factories/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(UpdateFactoryViewModel model)
         {
@@ -160,7 +167,8 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Factory/{id}/Products")]
+        [Route("Factories/{id}/Products")]
+        [Authorize(Roles = "FactoryOwner, ShopOwner, Admin")]
         public async Task<IActionResult> Products(int id)
         {
             var factory = await _context.Factories
@@ -173,10 +181,19 @@ namespace LogisticsApp.Controllers
                 return NotFound();
             }
 
-            return View(factory);
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var model = new FactoryOwnerViewModel
+            {
+                Factory = factory,
+                CurrentUserId = currentUser?.Id
+            };
+
+            return View(model);
         }
 
-        [Route("Factory/{factoryId}/Products/{productId}")]
+        [Route("Factories/{factoryId}/Products/{productId}")]
+        [Authorize(Roles = "FactoryOwner, ShopOwner, Admin")]
         public async Task<IActionResult> ProductDetails(int factoryId, int productId)
         {
             var factory = await _context.Factories
@@ -202,7 +219,7 @@ namespace LogisticsApp.Controllers
             return View(product);
         }
 
-        [Route("Factory/{factoryId}/Products/Add")]
+        [Route("Factories/{factoryId}/Products/AddProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProduct(int factoryId)
         {
@@ -234,7 +251,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{factoryId}/Products/Add")]
+        [Route("Factories/{factoryId}/Products/AddProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProduct(int factoryId, AddFactoryProductViewModel model)
         {
@@ -283,7 +300,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpGet]
-        [Route("Factory/{factoryId}/Products/{productId}/Delete")]
+        [Route("Factories/{factoryId}/Products/{productId}/DeleteProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct(int factoryId, int productId)
         {
@@ -308,7 +325,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{factoryId}/Products/{productId}/Delete")]
+        [Route("Factories/{factoryId}/Products/{productId}/DeleteProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProductConfirmed(int factoryId, int productId)
         {
@@ -335,7 +352,7 @@ namespace LogisticsApp.Controllers
             return RedirectToAction("Products", new { id = factoryId });
         }
 
-        [Route("Factory/{factoryId}/Products/{productId}/Update")]
+        [Route("Factories/{factoryId}/Products/{productId}/UpdateProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(int factoryId, int productId)
         {
@@ -358,7 +375,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{factoryId}/Products/{productId}/Update")]
+        [Route("Factories/{factoryId}/Products/{productId}/UpdateProduct")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(UpdateFactoryProductViewModel model)
         {
@@ -382,10 +399,26 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Factory/{factoryId}/Products/{productId}/Produce")]
+        [Route("Factories/{factoryId}/Products/{productId}/ProduceProduct")]
         [Authorize(Roles = "FactoryOwner")]
         public async Task<IActionResult> Produce(int factoryId, int productId)
         {
+            var factory = await _context.Factories
+                .Include(f => f.PortalUser)
+                .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+            if (factory == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (factory.PortalUserId != currentUser.Id)
+            {
+                return Forbid();
+            }
+
             var factoryProduct = await _context.FactoryProducts
                 .FirstOrDefaultAsync(fp => fp.FactoryId == factoryId && fp.ProductId == productId);
 
@@ -404,14 +437,30 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{factoryId}/Products/{productId}/Produce")]
+        [Route("Factories/{factoryId}/Products/{productId}/ProduceProduct")]
         [Authorize(Roles = "FactoryOwner")]
         public async Task<IActionResult> Produce(int factoryId, int productId, ProduceProductViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var factory = await _context.Factories
+                    .Include(f => f.PortalUser)
+                    .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+                if (factory == null)
+                {
+                    return NotFound();
+                }
+
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                if (factory.PortalUserId != currentUser.Id)
+                {
+                    return Forbid();
+                }
+
                 var factoryProduct = await _context.FactoryProducts
-                    .FirstOrDefaultAsync(fp => fp.FactoryId == model.FactoryId && fp.ProductId == model.ProductId);
+                    .FirstOrDefaultAsync(fp => fp.FactoryId == factoryId && fp.ProductId == productId);
 
                 if (factoryProduct == null)
                 {
@@ -430,20 +479,52 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpGet]
-        [Route("Factory/{factoryId}/Products/ProduceNewProduct")]
+        [Route("Factories/{factoryId}/Products/ProduceNewProduct")]
         [Authorize(Roles = "FactoryOwner")]
-        public IActionResult ProduceNewProduct(int factoryId)
+        public async Task<IActionResult> ProduceNewProduct(int factoryId)
         {
+            var factory = await _context.Factories
+                .Include(f => f.PortalUser)
+                .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+            if (factory == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (factory.PortalUserId != currentUser.Id)
+            {
+                return Forbid();
+            }
+
             return View(new ProduceNewProductViewModel { FactoryId = factoryId });
         }
 
         [HttpPost]
-        [Route("Factory/{factoryId}/Products/ProduceNewProduct")]
+        [Route("Factories/{factoryId}/Products/ProduceNewProduct")]
         [Authorize(Roles = "FactoryOwner")]
-        public async Task<IActionResult> ProduceNewProduct(ProduceNewProductViewModel model)
+        public async Task<IActionResult> ProduceNewProduct(int factoryId, ProduceNewProductViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var factory = await _context.Factories
+                .Include(f => f.PortalUser)
+                .FirstOrDefaultAsync(f => f.Id == factoryId);
+
+                if (factory == null)
+                {
+                    return NotFound();
+                }
+
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                if (factory.PortalUserId != currentUser.Id)
+                {
+                    return Forbid();
+                }
+
                 var product = new Product
                 {
                     Title = model.Title,
@@ -470,7 +551,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Factory/{factoryId}/Products/{productId}/Order")]
+        [Route("Factories/{factoryId}/Products/{productId}/OrderProduct")]
         [Authorize(Roles = "ShopOwner")]
         public async Task<IActionResult> Order(int factoryId, int productId)
         {
@@ -495,7 +576,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{factoryId}/Products/{productId}/Order")]
+        [Route("Factory/{factoryId}/Products/{productId}/OrderProduct")]
         [Authorize(Roles = "ShopOwner")]
         public async Task<IActionResult> Order(int factoryId, int productId, OrderProductViewModel model)
         {

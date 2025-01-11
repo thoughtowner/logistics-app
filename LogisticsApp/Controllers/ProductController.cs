@@ -16,6 +16,7 @@ namespace LogisticsApp.Controllers
             _context = context;
         }
 
+        [Route("Products")]
         public async Task<IActionResult> Index()
         {
             var products = await _context.Products.ToListAsync();
@@ -23,7 +24,7 @@ namespace LogisticsApp.Controllers
             return View(products);
         }
 
-        [Route("Product/{productId}")]
+        [Route("Products/{productId}")]
         public async Task<IActionResult> Details(int productId)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
@@ -36,7 +37,7 @@ namespace LogisticsApp.Controllers
             return View(product);
         }
 
-        [Route("Product/Create")]
+        [Route("Products/Create")]
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
@@ -44,7 +45,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Product/Create")]
+        [Route("Products/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CreateProductViewModel model)
         {
@@ -66,7 +67,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Product/{id}/Update")]
+        [Route("Products/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id)
         {
@@ -88,7 +89,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Product/{id}/Update")]
+        [Route("Products/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(UpdateProductViewModel model)
         {
@@ -113,7 +114,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("Product/{id}/Delete")]
+        [Route("Products/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -130,7 +131,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Product/{id}/Delete")]
+        [Route("Products/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

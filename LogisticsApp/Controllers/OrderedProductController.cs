@@ -21,6 +21,7 @@ namespace LogisticsApp.Controllers
         }
 
         [Route("OrderedProducts")]
+        [Authorize(Roles = "Driver, Admin")]
         public async Task<IActionResult> Index()
         {
             var orderedProducts = await _context.OrderedProducts
@@ -55,10 +56,17 @@ namespace LogisticsApp.Controllers
                 return NotFound();
             }
 
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (orderedProduct.Shop.PortalUserId != currentUser.Id && !User.IsInRole("Driver") && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             return View(orderedProduct);
         }
 
-        [Route("OrderedProducts/{orderedProductId}/Load")]
+        [Route("OrderedProduct/{orderedProductId}/LoadProduct")]
         [Authorize(Roles = "Driver")]
         public async Task<IActionResult> LoadProduct(int orderedProductId)
         {
@@ -84,7 +92,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("OrderedProducts/{orderedProductId}/Load")]
+        [Route("OrderedProduct/{orderedProductId}/LoadProduct")]
         [Authorize(Roles = "Driver")]
         public async Task<IActionResult> LoadProduct(int orderedProductId, LoadProductViewModel model)
         {

@@ -20,6 +20,7 @@ namespace LogisticsApp.Controllers
         }
 
         [Route("LoadedProducts")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var loadedProducts = await _context.LoadedProducts
@@ -43,7 +44,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("LoadedProducts/{orderedProductId}/{truckId}/{productId}")]
+        [Route("LoadedProducts/{orderedProductId}/{truckId}/Products/{productId}")]
         public async Task<IActionResult> ProductDetails(int orderedProductId, int truckId, int productId)
         {
             var loadedProduct = await _context.LoadedProducts
@@ -52,13 +53,22 @@ namespace LogisticsApp.Controllers
                         .ThenInclude(fp => fp.Product)
                 .Include(lp => lp.Truck)
                     .ThenInclude(t => t.PortalUser)
-                .FirstOrDefaultAsync(lp => lp.OrderedProductId == orderedProductId &&
-                                           lp.TruckId == truckId &&
-                                           lp.OrderedProduct.FactoryProduct.ProductId == productId);
+                .FirstOrDefaultAsync(
+                    lp => lp.OrderedProductId == orderedProductId &&
+                    lp.TruckId == truckId &&
+                    lp.OrderedProduct.FactoryProduct.ProductId == productId
+                );
 
             if (loadedProduct == null)
             {
                 return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (loadedProduct.Truck.PortalUserId != currentUser.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
             }
 
             return View(loadedProduct);

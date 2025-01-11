@@ -1,26 +1,26 @@
-﻿@model LogisticsApp.Models.Truck
+﻿@model LogisticsApp.Models.TruckOwnerViewModel
 
 @{
-    ViewData["Title"] = "Товары грузовика: " + Model.Brand + Model.Model + Model.StateNumber;
+    ViewData["Title"] = "Товары грузовика: " + Model.Truck.Brand + Model.Truck.Model + Model.Truck.StateNumber;
 }
 
-<h1>Товары грузовика: @Model.Brand @Model.Model @Model.StateNumber</h1>
+<h1>Товары грузовика: @Model.Truck.Brand @Model.Truck.Model @Model.Truck.StateNumber</h1>
 
-@if (Model.LoadedProducts.Any())
+@if (Model.Truck.LoadedProducts.Any())
 {
     <ul class="list-group">
-        @foreach (var loadedProduct in Model.LoadedProducts)
+        @foreach (var loadedProduct in Model.Truck.LoadedProducts)
         {
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a href="@Url.Action("ProductDetails", "Truck", new { truckId = Model.Id, productId = loadedProduct.OrderedProduct.FactoryProduct.Product.Id })">
+                <a href="@Url.Action("ProductDetails", "Truck", new { truckId = Model.Truck.Id, productId = loadedProduct.OrderedProduct.FactoryProduct.Product.Id })">
                     @loadedProduct.OrderedProduct.FactoryProduct.Product.Title
                 </a> - Количество: @loadedProduct.Quantity
             </li>
         }
     </ul>
-    @if (User.IsInRole("Driver"))
+    @if (Model.Truck.PortalUserId == Model.CurrentUserId)
     {
-        <form method="post" asp-action="DeliverProducts" asp-route-truckId="@Model.Id">
+        <form method="post" asp-action="DeliverProducts" asp-route-truckId="@Model.Truck.Id">
             <button type="submit" class="btn btn-danger mt-3">Отвезти продукты</button>
         </form>
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
 
 namespace LogisticsApp.Controllers
 {
@@ -11,12 +12,15 @@ namespace LogisticsApp.Controllers
     public class TruckController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<PortalUser> _userManager;
 
-        public TruckController(ApplicationDbContext context)
+        public TruckController(ApplicationDbContext context, UserManager<PortalUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
+        [Route("Trucks")]
         public async Task<IActionResult> Index()
         {
             var trucks = await _context.Trucks
@@ -34,6 +38,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
+        [Route("Trucks/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -55,6 +60,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
+        [Route("Trucks/Create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CreateTruckViewModel truckModel)
         {
@@ -90,7 +96,7 @@ namespace LogisticsApp.Controllers
             return View(truckModel);
         }
 
-        [Route("Truck/{id}/Delete")]
+        [Route("Trucks/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -107,7 +113,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Truck/{id}/Delete")]
+        [Route("Trucks/{id}/Delete")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -121,7 +127,7 @@ namespace LogisticsApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Route("Truck/{id}/Update")]
+        [Route("Trucks/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id)
         {
@@ -145,7 +151,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Truck/{id}/Update")]
+        [Route("Trucks/{id}/Update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(UpdateTruckViewModel truckModel)
         {
@@ -171,7 +177,7 @@ namespace LogisticsApp.Controllers
             return View(truckModel);
         }
 
-        [Route("Truck/{truckId}/Products")]
+        [Route("Trucks/{truckId}/Products")]
         public async Task<IActionResult> Products(int truckId)
         {
             var truck = await _context.Trucks
@@ -184,10 +190,23 @@ namespace LogisticsApp.Controllers
                 return NotFound();
             }
 
-            return View(truck);
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (truck.PortalUserId != currentUser?.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            var model = new TruckOwnerViewModel
+            {
+                Truck = truck,
+                CurrentUserId = currentUser?.Id
+            };
+
+            return View(model);
         }
 
-        [Route("Truck/{truckId}/Products/{productId}")]
+        [Route("Trucks/{truckId}/Products/{productId}")]
         public async Task<IActionResult> ProductDetails(int truckId, int productId)
         {
             var truck = await _context.Trucks
@@ -198,6 +217,13 @@ namespace LogisticsApp.Controllers
             if (truck == null)
             {
                 return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (truck.PortalUserId != currentUser?.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
             }
 
             var product = truck.LoadedProducts
@@ -214,7 +240,7 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Truck/{truckId}/DeliverProducts")]
+        [Route("Trucks/{truckId}/Products/DeliverAllProducts")]
         [Authorize(Roles = "Driver")]
         public async Task<IActionResult> DeliverProducts(int truckId)
         {
