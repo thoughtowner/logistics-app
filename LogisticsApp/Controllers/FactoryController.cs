@@ -576,14 +576,14 @@ namespace LogisticsApp.Controllers
         }
 
         [HttpPost]
-        [Route("Factory/{factoryId}/Products/{productId}/OrderProduct")]
+        [Route("Factories/{factoryId}/Products/{productId}/OrderProduct")]
         [Authorize(Roles = "ShopOwner")]
-        public async Task<IActionResult> Order(int factoryId, int productId, OrderProductViewModel model)
+        public async Task<IActionResult> Order(OrderProductViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var factoryProduct = await _context.FactoryProducts
-                    .FirstOrDefaultAsync(fp => fp.FactoryId == factoryId && fp.ProductId == productId);
+                    .FirstOrDefaultAsync(fp => fp.FactoryId == model.FactoryId && fp.ProductId == model.ProductId);
 
                 if (factoryProduct == null || factoryProduct.Quantity < model.Quantity)
                 {
@@ -622,7 +622,7 @@ namespace LogisticsApp.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Products", new { id = factoryId });
+                return RedirectToAction("Products", new { id = model.FactoryId });
             }
 
             return View(model);

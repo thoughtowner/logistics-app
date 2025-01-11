@@ -20,10 +20,11 @@
                     @shopProduct.Product.Title
                 </a> - Количество: @shopProduct.Quantity
 
-                <div>
+                @if (User.IsInRole("Admin"))
+                {
                     <a href="@Url.Action("UpdateProduct", "Shop", new { shopId = Model.Id, productId = shopProduct.Product.Id })" class="btn btn-warning btn-sm">Изменить количество</a>
                     <a href="@Url.Action("DeleteProduct", "Shop", new { shopId = Model.Id, productId = shopProduct.Product.Id })" class="btn btn-danger btn-sm">Удалить</a>
-                </div>
+                }
             </li>
         }
     </ul>

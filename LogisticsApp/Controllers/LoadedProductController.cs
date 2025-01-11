@@ -44,7 +44,7 @@ namespace LogisticsApp.Controllers
             return View(model);
         }
 
-        [Route("LoadedProducts/{orderedProductId}/{truckId}/Products/{productId}")]
+        [Route("LoadedProducts/{orderedProductId}/{truckId}/{productId}")]
         public async Task<IActionResult> ProductDetails(int orderedProductId, int truckId, int productId)
         {
             var loadedProduct = await _context.LoadedProducts

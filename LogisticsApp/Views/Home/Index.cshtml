@@ -15,46 +15,66 @@ else
 {
     @if (User.IsInRole("FactoryOwner"))
     {
-        <p><a href="@Url.Action("Products", "Factory", new { id = userFactoryId.Value })">Товары Вашей фабрики</a></p>
+        <form action="@Url.Action("Products", "Factory", new { id = userFactoryId.Value })" method="get">
+            <button type="submit" class="btn btn-primary">Товары Вашей фабрики</button>
+        </form>
     }
 
     @if (User.IsInRole("ShopOwner"))
     {
-        <p><a href="@Url.Action("Products", "Shop", new { id = userShopId.Value })">Товары Вашего магазина</a></p>
+        <form action="@Url.Action("Products", "Shop", new { id = userShopId.Value })" method="get">
+            <button type="submit" class="btn btn-primary">Товары Вашего магазина</button>
+        </form>
     }
 
     @if (User.IsInRole("Driver"))
     {
-        <p><a href="@Url.Action("Products", "Truck", new { truckId = userTruckId.Value })">Загруженные товары Вашего грузовика</a></p>
+        <form action="@Url.Action("Products", "Truck", new { truckId = userTruckId.Value })" method="get">
+            <button type="submit" class="btn btn-primary">Загруженные товары Вашего грузовика</button>
+        </form>
     }
 
     <p>---</p>
 
-    <p><a href="@Url.Action("AddRole", "Role")">Назначить роль</a></p>
+    <form action="@Url.Action("AddRole", "Role")" method="get">
+        <button type="submit" class="btn btn-secondary">Назначить роль</button>
+    </form>
 
     @if (User.IsInRole("ShopOwner") || User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "Shop")">Магазины</a></p>
+        <form action="@Url.Action("Index", "Shop")" method="get">
+            <button type="submit" class="btn btn-secondary">Магазины</button>
+        </form>
     }
 
     @if (User.IsInRole("FactoryOwner") || User.IsInRole("ShopOwner") || User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "Factory")">Фабрики</a></p>
+        <form action="@Url.Action("Index", "Factory")" method="get">
+            <button type="submit" class="btn btn-secondary">Фабрики</button>
+        </form>
     }
     @if (User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "Truck")">Грузовики</a></p>
+        <form action="@Url.Action("Index", "Truck")" method="get">
+            <button type="submit" class="btn btn-secondary">Грузовики</button>
+        </form>
     }
     @if (User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "Product")">Товары</a></p>
+        <form action="@Url.Action("Index", "Product")" method="get">
+            <button type="submit" class="btn btn-secondary">Товары</button>
+        </form>
     }
     @if (User.IsInRole("Driver") || User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "OrderedProduct")">Заказанные товары</a></p>
+        <form action="@Url.Action("Index", "OrderedProduct")" method="get">
+            <button type="submit" class="btn btn-secondary">Заказанные товары</button>
+        </form>
     }
     @if (User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "LoadedProduct")">Загруженные в грузовики товары</a></p>
+        <form action="@Url.Action("Index", "LoadedProduct")" method="get">
+            <button type="submit" class="btn btn-secondary">Загруженные в грузовики товары</button>
+        </form>
     }
 }
