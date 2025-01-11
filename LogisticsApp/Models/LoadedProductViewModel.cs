@@ -2,12 +2,12 @@
 {
     public class LoadedProductViewModel
     {
-        public int OrderedProductId { get; set; } // Id заказа продукта
-        public int TruckId { get; set; } // Id грузовика
-        public int ProductId { get; set; } // Id продукта
-        public string ProductName { get; set; } // Название продукта
-        public string TruckBrand { get; set; } // Марка грузовика
-        public string TruckModel { get; set; } // Модель грузовика
-        public int Quantity { get; set; } // Количество загруженного продукта
+        public int OrderedProductId { get; set; }
+        public int TruckId { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string TruckBrand { get; set; }
+        public string TruckModel { get; set; }
+        public int Quantity { get; set; }
     }
 }

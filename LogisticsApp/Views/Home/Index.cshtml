@@ -1,57 +1,60 @@
 ﻿@{
     var isAuthenticated = (bool)ViewData["IsAuthenticated"];
-    var roles = (List<string>)ViewData["Roles"];
+    var userFactoryId = (int?)ViewData["UserFactoryId"];
+    var userShopId = (int?)ViewData["UserShopId"];
+    var userTruckId = (int?)ViewData["UserTruckId"];
 }
 
 <h1>Главная страница</h1>
 
 @if (!isAuthenticated)
 {
-    <p>Welcome</p>
+    <p>Пройдите решистрацию и войдите в систему, чтобы пользоваться приложением.</p>
 }
 else
 {
-    <p>Вы залогинены</p>
-
-    @if (roles.Contains("Admin"))
+    @if (User.IsInRole("FactoryOwner"))
     {
-        <p>Личный кабинет Администратора</p>
+        <p><a href="@Url.Action("Products", "Factory", new { id = userFactoryId.Value })">Продукты Вашей фабрики</a></p>
     }
 
-    @if (roles.Contains("ShopOwner"))
+    @if (User.IsInRole("ShopOwner"))
     {
-        <p>Личный кабинет Владельца магазина</p>
+        <p><a href="@Url.Action("Products", "Shop", new { id = userShopId.Value })">Продукты Вашего магазина</a></p>
     }
 
-    @if (roles.Contains("FactoryOwner"))
+    @if (User.IsInRole("Driver"))
     {
-        <p>Личный кабинет Владельца фабрики</p>
+        <p><a href="@Url.Action("Products", "Truck", new { truckId = userTruckId.Value })">Загруженные продукты Вашего грузовика</a></p>
     }
 
-    @if (roles.Contains("Driver"))
+    <p>---</p>
+
+    <p><a href="@Url.Action("AddRole", "Role")">Назначить роль</a></p>
+
+    @if (User.IsInRole("ShopOwner") || User.IsInRole("Admin"))
     {
-        <p>Личный кабинет Водителя</p>
+        <p><a href="@Url.Action("Index", "Shop")">Магазины</a></p>
     }
 
-    <p>
-        <a href="@Url.Action("AddRole", "Role")">Назначить роль</a>
-    </p>
-    <p>
-        <a href="@Url.Action("Index", "Shop")">Магазины</a>
-    </p>
-    <p>
-        <a href="@Url.Action("Index", "Factory")">Фабрики</a>
-    </p>
-    <p>
-        <a href="@Url.Action("Index", "Truck")">Грузовики</a>
-    </p>
-    <p>
-        <a href="@Url.Action("Index", "Product")">Продукты</a>
-    </p>
-    <p>
-        <a href="@Url.Action("Index", "OrderedProduct")">Заказанные продукты</a>
-    </p>
-    <p>
-        <a href="@Url.Action("Index", "LoadedProduct")">Загруженные в грузовики продукты</a>
-    </p>
+    @if (User.IsInRole("FactoryOwner") || User.IsInRole("ShopOwner") || User.IsInRole("Admin"))
+    {
+        <p><a href="@Url.Action("Index", "Factory")">Фабрики</a></p>
+    }
+    @if (User.IsInRole("Admin"))
+    {
+        <p><a href="@Url.Action("Index", "Truck")">Грузовики</a></p>
+    }
+    @if (User.IsInRole("Admin"))
+    {
+        <p><a href="@Url.Action("Index", "Product")">Продукты</a></p>
+    }
+    @if (User.IsInRole("Driver") || User.IsInRole("Admin"))
+    {
+        <p><a href="@Url.Action("Index", "OrderedProduct")">Заказанные продукты</a></p>
+    }
+    @if (User.IsInRole("Admin"))
+    {
+        <p><a href="@Url.Action("Index", "LoadedProduct")">Загруженные в грузовики продукты</a></p>
+    }
 }

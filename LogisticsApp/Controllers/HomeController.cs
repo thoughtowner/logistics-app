@@ -1,6 +1,8 @@
+using LogisticsApp.Data;
 using LogisticsApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace LogisticsApp.Controllers
@@ -8,11 +10,13 @@ namespace LogisticsApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<PortalUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<PortalUser> userManager)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<PortalUser> userManager)
         {
             _logger = logger;
+            _context = context;
             _userManager = userManager;
         }
 
@@ -20,12 +24,30 @@ namespace LogisticsApp.Controllers
         {
             var isAuthenticated = User.Identity.IsAuthenticated;
 
-            var roles = isAuthenticated
-                ? await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))
-                : new List<string>();
-
             ViewData["IsAuthenticated"] = isAuthenticated;
-            ViewData["Roles"] = roles;
+
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (User.IsInRole("FactoryOwner"))
+            {
+                var userFactory = await _context.Factories
+                    .FirstOrDefaultAsync(f => f.PortalUserId == currentUser.Id);
+                ViewData["UserFactoryId"] = userFactory?.Id;
+            }
+
+            if (User.IsInRole("ShopOwner"))
+            {
+                var userShop = await _context.Shops
+                    .FirstOrDefaultAsync(s => s.PortalUserId == currentUser.Id);
+                ViewData["UserShopId"] = userShop?.Id;
+            }
+
+            if (User.IsInRole("Driver"))
+            {
+                var userTruck = await _context.Trucks
+                    .FirstOrDefaultAsync(t => t.PortalUserId == currentUser.Id);
+                ViewData["UserTruckId"] = userTruck?.Id;
+            }
 
             return View();
         }
