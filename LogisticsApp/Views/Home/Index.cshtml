@@ -15,17 +15,17 @@ else
 {
     @if (User.IsInRole("FactoryOwner"))
     {
-        <p><a href="@Url.Action("Products", "Factory", new { id = userFactoryId.Value })">Продукты Вашей фабрики</a></p>
+        <p><a href="@Url.Action("Products", "Factory", new { id = userFactoryId.Value })">Товары Вашей фабрики</a></p>
     }
 
     @if (User.IsInRole("ShopOwner"))
     {
-        <p><a href="@Url.Action("Products", "Shop", new { id = userShopId.Value })">Продукты Вашего магазина</a></p>
+        <p><a href="@Url.Action("Products", "Shop", new { id = userShopId.Value })">Товары Вашего магазина</a></p>
     }
 
     @if (User.IsInRole("Driver"))
     {
-        <p><a href="@Url.Action("Products", "Truck", new { truckId = userTruckId.Value })">Загруженные продукты Вашего грузовика</a></p>
+        <p><a href="@Url.Action("Products", "Truck", new { truckId = userTruckId.Value })">Загруженные товары Вашего грузовика</a></p>
     }
 
     <p>---</p>
@@ -47,14 +47,14 @@ else
     }
     @if (User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "Product")">Продукты</a></p>
+        <p><a href="@Url.Action("Index", "Product")">Товары</a></p>
     }
     @if (User.IsInRole("Driver") || User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "OrderedProduct")">Заказанные продукты</a></p>
+        <p><a href="@Url.Action("Index", "OrderedProduct")">Заказанные товары</a></p>
     }
     @if (User.IsInRole("Admin"))
     {
-        <p><a href="@Url.Action("Index", "LoadedProduct")">Загруженные в грузовики продукты</a></p>
+        <p><a href="@Url.Action("Index", "LoadedProduct")">Загруженные в грузовики товары</a></p>
     }
 }

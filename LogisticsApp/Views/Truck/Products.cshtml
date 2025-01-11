@@ -21,7 +21,7 @@
     @if (Model.Truck.PortalUserId == Model.CurrentUserId)
     {
         <form method="post" asp-action="DeliverProducts" asp-route-truckId="@Model.Truck.Id">
-            <button type="submit" class="btn btn-danger mt-3">Отвезти продукты</button>
+            <button type="submit" class="btn btn-danger mt-3">Отвезти товары по магазинам</button>
         </form>
     }
 }

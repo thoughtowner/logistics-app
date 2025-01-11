@@ -1,10 +1,10 @@
 ﻿@model LogisticsApp.Models.LoadedProduct
 
 @{
-    ViewData["Title"] = "Детали загруженного продукта";
+    ViewData["Title"] = "Детали загруженного товара";
 }
 
-<h1>Детали продукта: @Model.OrderedProduct.FactoryProduct.Product.Title</h1>
+<h1>Детали товара: @Model.OrderedProduct.FactoryProduct.Product.Title</h1>
 
 <div>
     <p><strong>Название:</strong> @Model.OrderedProduct.FactoryProduct.Product.Title</p>
@@ -13,5 +13,5 @@
 </div>
 
 <div>
-    <a href="@Url.Action("Index", "LoadedProduct")" class="btn btn-secondary">Назад к списку загруженных продуктов</a>
+    <a href="@Url.Action("Index", "LoadedProduct")" class="btn btn-secondary">Назад к списку загруженных товаров</a>
 </div>

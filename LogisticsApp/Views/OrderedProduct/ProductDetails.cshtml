@@ -1,10 +1,10 @@
 ﻿@model LogisticsApp.Models.OrderedProduct
 
 @{
-    ViewData["Title"] = "Детали заказанного продукта";
+    ViewData["Title"] = "Детали заказанного товара";
 }
 
-<h1>Детали продукта: @Model.FactoryProduct.Product.Title</h1>
+<h1>Детали товара: @Model.FactoryProduct.Product.Title</h1>
 
 <div>
     <p><strong>Название:</strong> @Model.FactoryProduct.Product.Title</p>
@@ -13,5 +13,5 @@
 </div>
 
 <div>
-    <a href="@Url.Action("Index", "OrderedProduct")" class="btn btn-secondary">Назад к списку заказанных продуктов</a>
+    <a href="@Url.Action("Index", "OrderedProduct")" class="btn btn-secondary">Назад к списку заказанных товаров</a>
 </div>

@@ -1,10 +1,10 @@
 ﻿@model LogisticsApp.Models.LoadProductViewModel
 
 @{
-    ViewData["Title"] = "Погрузка продукта: " + Model.ProductName;
+    ViewData["Title"] = "Погрузка товара: " + Model.ProductName;
 }
 
-<h1>Погрузка продукта: @Model.ProductName</h1>
+<h1>Погрузка товара: @Model.ProductName</h1>
 
 <form method="post">
     <div class="form-group">
@@ -20,5 +20,5 @@
 </form>
 
 <div>
-    <a href="@Url.Action("Index", "OrderedProduct")" class="btn btn-secondary mt-3">Назад к заказанным продуктам</a>
+    <a href="@Url.Action("Index", "OrderedProduct")" class="btn btn-secondary mt-3">Назад к заказанным товарам</a>
 </div>
