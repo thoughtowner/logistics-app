@@ -28,10 +28,10 @@ namespace LogisticsApp
                 options.LogoutPath = "/Identity/Account/Logout";
             });
 
-
             var app = builder.Build();
 
             await InitializeRolesAsync(app);
+            await InitializeAdminAsync(app);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -41,7 +41,6 @@ namespace LogisticsApp
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -67,6 +66,19 @@ namespace LogisticsApp
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 await InitializeRoles.Initialize(scope.ServiceProvider, roleManager);
+            }
+        }
+
+        public static async Task InitializeAdminAsync(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var userManager = services.GetRequiredService<UserManager<PortalUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var context = services.GetRequiredService<ApplicationDbContext>();
+
+                await InitializeAdmin.Initialize(services, userManager, roleManager, context);
             }
         }
     }

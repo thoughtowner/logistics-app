@@ -43,7 +43,7 @@ namespace LogisticsApp.Controllers
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var availableRoles = await _roleManager.Roles
-                .Where(role => !userRoles.Contains(role.Name))
+                .Where(role => !userRoles.Contains(role.Name) && role.Name != "Admin")
                 .ToListAsync();
 
             var roleModel = new AddRoleViewModel
@@ -159,6 +159,45 @@ namespace LogisticsApp.Controllers
 
             roleModel.Roles = availableRoles;
             return View(roleModel);
+        }
+
+        [Route("Roles/GiveUserAdminRole")]
+        public async Task<IActionResult> GiveUserAdminRole()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            var nonAdminUsers = new List<PortalUser>();
+            foreach (var user in users)
+            {
+                var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                if (!isAdmin)
+                {
+                    nonAdminUsers.Add(user);
+                }
+            }
+
+            return View(nonAdminUsers);
+        }
+
+        [HttpPost]
+        [Route("Roles/GiveUserAdminRole")]
+        public async Task<IActionResult> GiveUserAdminRole(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var isInRole = await _userManager.IsInRoleAsync(user, "Admin");
+
+            if (!isInRole)
+            {
+                await _userManager.AddToRoleAsync(user, "Admin");
+            }
+
+            return RedirectToAction("GiveUserAdminRole");
         }
     }
 }
