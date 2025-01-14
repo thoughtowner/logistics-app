@@ -21,7 +21,10 @@
 
                 @if (User.IsInRole("Driver"))
                 {
-                    <a href="@Url.Action("LoadProduct", "OrderedProduct", new { orderedProductId = item.Id })" class="btn btn-primary btn-sm">Погрузить</a>
+                    @if (item.Quantity != 0)
+                    {
+                        <a href="@Url.Action("LoadProduct", "OrderedProduct", new { orderedProductId = item.Id })" class="btn btn-primary btn-sm">Погрузить</a>
+                    }
                 }
             </li>
         }

@@ -3,6 +3,7 @@ using LogisticsApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace LogisticsApp.Controllers
@@ -166,23 +167,38 @@ namespace LogisticsApp.Controllers
         {
             var users = await _userManager.Users.ToListAsync();
 
-            var nonAdminUsers = new List<PortalUser>();
+            var nonAdminUsers = new List<SelectListItem>();
+
             foreach (var user in users)
             {
                 var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
                 if (!isAdmin)
                 {
-                    nonAdminUsers.Add(user);
+                    nonAdminUsers.Add(new SelectListItem
+                    {
+                        Value = user.Id,
+                        Text = user.UserName
+                    });
                 }
             }
 
-            return View(nonAdminUsers);
+            var viewModel = new GiveUserAdminRoleViewModel
+            {
+                Users = nonAdminUsers
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [Route("Roles/GiveUserAdminRole")]
         public async Task<IActionResult> GiveUserAdminRole(string userId)
         {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("Пользователь не выбран.");
+            }
+
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
@@ -194,7 +210,7 @@ namespace LogisticsApp.Controllers
 
             if (!isInRole)
             {
-                await _userManager.AddToRoleAsync(user, "Admin");
+                var result = await _userManager.AddToRoleAsync(user, "Admin");
             }
 
             return RedirectToAction("GiveUserAdminRole");
